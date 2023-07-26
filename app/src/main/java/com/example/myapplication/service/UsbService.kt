@@ -1,6 +1,5 @@
-package com.example.myapplication
+package com.example.myapplication.service
 
-import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.app.PendingIntent
 import android.content.BroadcastReceiver
@@ -10,65 +9,21 @@ import android.content.IntentFilter
 import android.hardware.usb.UsbDevice
 import android.hardware.usb.UsbDeviceConnection
 import android.hardware.usb.UsbManager
-import android.os.Bundle
 import android.util.Log
-import android.widget.Button
-import android.widget.TextView
-import androidx.appcompat.app.AppCompatActivity
 import com.felhr.usbserial.UsbSerialDevice
 import com.felhr.usbserial.UsbSerialInterface
-import com.felhr.usbserial.UsbSerialInterface.UsbReadCallback
 
+class UsbService(m_usbManager: UsbManager, contextClass: Context?) {
 
-class MainActivity : AppCompatActivity() {
-
-    lateinit var m_usbManager: UsbManager
+    var context = contextClass
+    var m_usbManager = m_usbManager
     var m_device: UsbDevice? = null
     var m_serial: UsbSerialDevice? = null
     var m_connection: UsbDeviceConnection? = null
 
     val ACTION_USB_PERMISSION = "permission"
 
-    private lateinit var myTextView: TextView
-
-    private lateinit var statusConnectionTextView: TextView
-
-
-    @SuppressLint("MissingInflatedId")
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
-
-        m_usbManager = getSystemService(Context.USB_SERVICE) as UsbManager
-
-
-        val on = findViewById<Button>(R.id.on)
-        val off = findViewById<Button>(R.id.off)
-        val disconnect = findViewById<Button>(R.id.disconnect)
-        val connect = findViewById<Button>(R.id.connect)
-
-        myTextView = findViewById(R.id.textView)
-
-        statusConnectionTextView = findViewById(R.id.statusConnectedTextViewId)
-
-        startUsbService()
-
-        on.setOnClickListener { sendData("a") } //97
-        off.setOnClickListener { sendData("b") }
-        disconnect.setOnClickListener { disconnect() }
-        connect.setOnClickListener { startUsbConnecting() }
-    }
-
-    private fun startUsbService() {
-        val filter = IntentFilter()
-        filter.addAction(ACTION_USB_PERMISSION)
-        filter.addAction(UsbManager.ACTION_USB_ACCESSORY_ATTACHED)
-        filter.addAction(UsbManager.ACTION_USB_DEVICE_ATTACHED)
-        registerReceiver(broadcastReceiver, filter)
-    }
-
-
-    private fun startUsbConnecting() {
+     fun startUsbConnecting() {
         Log.i("serial", "starting connections")
 
         val usbDevices: HashMap<String, UsbDevice>? = m_usbManager.deviceList
@@ -82,7 +37,7 @@ class MainActivity : AppCompatActivity() {
                     Log.i("serial", "vendorId: " + deviceVendorId)
 
                     val intent: PendingIntent = PendingIntent.getBroadcast(
-                        this,
+                        context,
                         0,
                         Intent(ACTION_USB_PERMISSION),
                         PendingIntent.FLAG_MUTABLE
@@ -90,14 +45,14 @@ class MainActivity : AppCompatActivity() {
 
                     m_usbManager.requestPermission(m_device, intent)
 
-                    val al2 = AlertDialog.Builder(this)
+                    val al2 = AlertDialog.Builder(context)
                     al2.setTitle("id")
                     al2.setMessage("m_device ${m_device!!.manufacturerName}")
                     al2.show()
 
 
                 } catch (e: Exception) {
-                    val alertError = AlertDialog.Builder(this)
+                    val alertError = AlertDialog.Builder(context)
                     alertError.setTitle("error")
                     alertError.setMessage("message: ${e.message}")
                     alertError.show()
@@ -107,23 +62,23 @@ class MainActivity : AppCompatActivity() {
         } else {
             Log.i("serial", "no usb device connected")
 
-            val alertError = AlertDialog.Builder(this)
+            val alertError = AlertDialog.Builder(context)
             alertError.setTitle("info")
             alertError.setMessage("no usb device connected")
             alertError.show()
         }
     }
 
-    private fun sendData(input: String) {
+     fun sendData(input: String) {
         m_serial?.write(input.toByteArray())
         Log.i("serial", "sending data: " + input.toByteArray())
     }
 
-    private fun disconnect() {
+     fun disconnect() {
         m_serial?.close()
     }
 
-    private val broadcastReceiver = object : BroadcastReceiver() {
+     val broadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
             if (intent?.action!! == ACTION_USB_PERMISSION) {
 
@@ -142,7 +97,7 @@ class MainActivity : AppCompatActivity() {
                             m_serial!!.setFlowControl(UsbSerialInterface.FLOW_CONTROL_OFF)
                             m_serial!!.read(usbSerialListener)
 
-                            statusConnectionTextView.text = "Connected Success!"
+                            //statusConnectionTextView.text = "Connected Success!"
 
                         } else {
                             Log.i("Serial", "port not open")
@@ -157,7 +112,7 @@ class MainActivity : AppCompatActivity() {
                 // abre coenxao assim que insere o cabo USB
                 //startUsbConnecting()
             } else if (intent.action == UsbManager.ACTION_USB_DEVICE_DETACHED) {
-                statusConnectionTextView.text = "No Connected"
+                //statusConnectionTextView.text = "No Connected"
                 disconnect()
 
             }
@@ -165,24 +120,25 @@ class MainActivity : AppCompatActivity() {
     }
 
 
-    private val usbSerialListener = object : UsbReadCallback {
+    private val usbSerialListener = object : UsbSerialInterface.UsbReadCallback {
         override fun onReceivedData(data: ByteArray) {
             try {
                 val receivedString = String(data)
 
                 if (receivedString == "A") {
-                    myTextView.text = "A"
+                    //myTextView.text = "A"
                 }
 
                 if (receivedString == "B") {
-                    myTextView.text = "B"
+                    //myTextView.text = "B"
                 }
 
             } catch (e: Exception) {
-                myTextView.text = e.message
+                //myTextView.text = e.message
             }
         }
     }
+
 
 
 }
