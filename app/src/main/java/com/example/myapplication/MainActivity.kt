@@ -22,10 +22,10 @@ import com.felhr.usbserial.UsbSerialInterface.UsbReadCallback
 
 class MainActivity : AppCompatActivity() {
 
-    lateinit var m_usbManager: UsbManager
-    var m_device: UsbDevice? = null
-    var m_serial: UsbSerialDevice? = null
-    var m_connection: UsbDeviceConnection? = null
+    lateinit var usbManager: UsbManager
+    var usbDevice: UsbDevice? = null
+    var usbSerialDevice: UsbSerialDevice? = null
+    var usbDeviceConnection: UsbDeviceConnection? = null
 
     val ACTION_USB_PERMISSION = "permission"
 
@@ -39,9 +39,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        m_usbManager = getSystemService(Context.USB_SERVICE) as UsbManager
-
-
+        // view elements
         val on = findViewById<Button>(R.id.on)
         val off = findViewById<Button>(R.id.off)
         val disconnect = findViewById<Button>(R.id.disconnect)
@@ -60,6 +58,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun startUsbService() {
+        usbManager = getSystemService(Context.USB_SERVICE) as UsbManager
+
         val filter = IntentFilter()
         filter.addAction(ACTION_USB_PERMISSION)
         filter.addAction(UsbManager.ACTION_USB_ACCESSORY_ATTACHED)
@@ -71,14 +71,14 @@ class MainActivity : AppCompatActivity() {
     private fun startUsbConnecting() {
         Log.i("serial", "starting connections")
 
-        val usbDevices: HashMap<String, UsbDevice>? = m_usbManager.deviceList
+        val usbDevices: HashMap<String, UsbDevice>? = usbManager.deviceList
 
         if (!usbDevices?.isEmpty()!!) {
             usbDevices.forEach { entry ->
 
                 try {
-                    m_device = entry.value
-                    val deviceVendorId: Int? = m_device?.vendorId
+                    usbDevice = entry.value
+                    val deviceVendorId: Int? = usbDevice?.vendorId
                     Log.i("serial", "vendorId: " + deviceVendorId)
 
                     val intent: PendingIntent = PendingIntent.getBroadcast(
@@ -88,11 +88,11 @@ class MainActivity : AppCompatActivity() {
                         PendingIntent.FLAG_MUTABLE
                     )
 
-                    m_usbManager.requestPermission(m_device, intent)
+                    usbManager.requestPermission(usbDevice, intent)
 
                     val al2 = AlertDialog.Builder(this)
                     al2.setTitle("id")
-                    al2.setMessage("m_device ${m_device!!.manufacturerName}")
+                    al2.setMessage("usbDevice ${usbDevice!!.manufacturerName}")
                     al2.show()
 
 
@@ -115,12 +115,12 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun sendData(input: String) {
-        m_serial?.write(input.toByteArray())
+        usbSerialDevice?.write(input.toByteArray())
         Log.i("serial", "sending data: " + input.toByteArray())
     }
 
     private fun disconnect() {
-        m_serial?.close()
+        usbSerialDevice?.close()
     }
 
     private val broadcastReceiver = object : BroadcastReceiver() {
@@ -131,16 +131,16 @@ class MainActivity : AppCompatActivity() {
 
                 if (granted) {
 
-                    m_connection = m_usbManager.openDevice(m_device)
-                    m_serial = UsbSerialDevice.createUsbSerialDevice(m_device, m_connection)
-                    if (m_serial != null) {
-                        if (m_serial!!.open()) {
-                            m_serial!!.setBaudRate(9600)
-                            m_serial!!.setDataBits(UsbSerialInterface.DATA_BITS_8)
-                            m_serial!!.setStopBits(UsbSerialInterface.STOP_BITS_1)
-                            m_serial!!.setParity(UsbSerialInterface.PARITY_NONE)
-                            m_serial!!.setFlowControl(UsbSerialInterface.FLOW_CONTROL_OFF)
-                            m_serial!!.read(usbSerialListener)
+                    usbDeviceConnection = usbManager.openDevice(usbDevice)
+                    usbSerialDevice = UsbSerialDevice.createUsbSerialDevice(usbDevice, usbDeviceConnection)
+                    if (usbSerialDevice != null) {
+                        if (usbSerialDevice!!.open()) {
+                            usbSerialDevice!!.setBaudRate(9600)
+                            usbSerialDevice!!.setDataBits(UsbSerialInterface.DATA_BITS_8)
+                            usbSerialDevice!!.setStopBits(UsbSerialInterface.STOP_BITS_1)
+                            usbSerialDevice!!.setParity(UsbSerialInterface.PARITY_NONE)
+                            usbSerialDevice!!.setFlowControl(UsbSerialInterface.FLOW_CONTROL_OFF)
+                            usbSerialDevice!!.read(usbSerialListener)
 
                             statusConnectionTextView.text = "Connected Success!"
 
