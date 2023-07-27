@@ -12,15 +12,19 @@ import android.hardware.usb.UsbDeviceConnection
 import android.hardware.usb.UsbManager
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import android.widget.Button
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import com.example.myapplication.databinding.ActivityMainBinding
 import com.felhr.usbserial.UsbSerialDevice
 import com.felhr.usbserial.UsbSerialInterface
 import com.felhr.usbserial.UsbSerialInterface.UsbReadCallback
 
 
 class MainActivity : AppCompatActivity() {
+
+    private lateinit var binding: ActivityMainBinding
 
     lateinit var usbManager: UsbManager
     var usbDevice: UsbDevice? = null
@@ -37,7 +41,15 @@ class MainActivity : AppCompatActivity() {
     @SuppressLint("MissingInflatedId")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+
+        binding = ActivityMainBinding.inflate(layoutInflater)
+
+        setContentView(binding.root)
+
+        binding.tela2Btn.setOnClickListener {
+            val navegarSegundaTEla = Intent(this, Tela2::class.java)
+            startActivity(navegarSegundaTEla)
+        }
 
         // view elements
         val on = findViewById<Button>(R.id.on)
@@ -114,7 +126,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun sendData(input: String) {
+    fun sendData(input: String) {
         usbSerialDevice?.write(input.toByteArray())
         Log.i("serial", "sending data: " + input.toByteArray())
     }
@@ -183,6 +195,7 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
+
 
 
 }

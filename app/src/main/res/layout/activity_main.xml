@@ -71,4 +71,15 @@
         app:layout_constraintTop_toBottomOf="@+id/disconnect"
         tools:ignore="MissingConstraints" />
 
+
+    <Button
+        android:id="@+id/tela_2_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:onClick="telaDoisRedirect"
+        android:text="@string/tela_2_btn"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/statusConnectedTextViewId" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>
