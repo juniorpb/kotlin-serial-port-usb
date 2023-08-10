@@ -7,9 +7,6 @@
     android:padding="32dp"
     android:background="#f3f3f3">
 
-    <!-- Logo Image -->
-
-    <!-- Username EditText -->
     <ImageView
         android:id="@+id/imageViewLogo"
         android:layout_width="345dp"
@@ -42,7 +39,6 @@
         android:hint="Password"
         android:inputType="textPassword"
         android:padding="12dp"
-
         android:textAppearance="@style/TextAppearance.AppCompat.Body2"
         android:textColor="#000" />
 
@@ -51,9 +47,7 @@
         android:id="@+id/btnLogin"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/etPassword"
         android:layout_marginTop="24dp"
-        android:
         android:backgroundTint="#3EA1FE"
         android:backgroundTintMode="add"
         android:padding="12dp"

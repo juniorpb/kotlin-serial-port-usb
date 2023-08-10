@@ -24,6 +24,15 @@ class LoginActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
     }
+
+}
+
+class PageActivity : AppCompatActivity() {
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_select)
+    }
 }
 
 class MainActivity : AppCompatActivity() {
@@ -47,6 +56,7 @@ class MainActivity : AppCompatActivity() {
             val intent = Intent(this, LoginActivity::class.java)
             startActivity(intent)
         }
+
         val on = findViewById<Button>(R.id.on)
         val off = findViewById<Button>(R.id.off)
         val disconnect = findViewById<Button>(R.id.disconnect)

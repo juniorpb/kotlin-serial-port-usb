@@ -1,8 +1,11 @@
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
 import com.example.myapplication.R
+
+
 
 class LoginActivity : AppCompatActivity() {
 
@@ -14,6 +17,9 @@ class LoginActivity : AppCompatActivity() {
         btnLogin.setOnClickListener {
             val intent = Intent(this, PageActivity::class.java)
             startActivity(intent)
+
+            Log.d("LoginActivity", "Starting PageActivity")
         }
     }
+
 }
