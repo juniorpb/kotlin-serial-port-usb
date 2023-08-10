@@ -17,6 +17,15 @@ import com.felhr.usbserial.UsbSerialDevice
 import com.felhr.usbserial.UsbSerialInterface
 import java.lang.Exception
 
+
+class LoginActivity : AppCompatActivity() {
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_login)
+    }
+}
+
 class MainActivity : AppCompatActivity() {
 
     lateinit var m_usbManager: UsbManager
@@ -26,13 +35,18 @@ class MainActivity : AppCompatActivity() {
 
     val ACTION_USB_PERMISSION = "permission"
 
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
         m_usbManager = getSystemService(Context.USB_SERVICE) as UsbManager
 
-
+        val btnGoToLogin: Button = findViewById(R.id.btnGoToLogin)
+        btnGoToLogin.setOnClickListener {
+            val intent = Intent(this, LoginActivity::class.java)
+            startActivity(intent)
+        }
         val on = findViewById<Button>(R.id.on)
         val off = findViewById<Button>(R.id.off)
         val disconnect = findViewById<Button>(R.id.disconnect)
