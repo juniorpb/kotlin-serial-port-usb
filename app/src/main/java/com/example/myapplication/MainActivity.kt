@@ -180,14 +180,13 @@ class MainActivity : AppCompatActivity() {
     private val usbSerialListener = object : UsbReadCallback {
         override fun onReceivedData(data: ByteArray) {
             try {
+
                 val receivedString = String(data)
+                Log.i("======RECEIVE", receivedString)
 
-                if (receivedString == "A") {
-                    myTextView.text = "A"
-                }
+                if (receivedString.isNotEmpty()){
 
-                if (receivedString == "B") {
-                    myTextView.text = "B"
+                    myTextView.text = receivedString
                 }
 
             } catch (e: Exception) {
