@@ -3,9 +3,11 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical"
     android:padding="32dp"
-    android:background="#f3f3f3">
+    android:background="#f3f3f3"
+    tools:context=".LoginActivity">
 
     <!-- Logo Image -->
 
@@ -53,7 +55,6 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/etPassword"
         android:layout_marginTop="24dp"
-        android:
         android:backgroundTint="#3EA1FE"
         android:backgroundTintMode="add"
         android:padding="12dp"
