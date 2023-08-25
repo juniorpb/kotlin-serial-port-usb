@@ -1,5 +1,6 @@
 package com.example.myapplication
 
+import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.app.PendingIntent
 import android.content.BroadcastReceiver
@@ -9,64 +10,67 @@ import android.content.IntentFilter
 import android.hardware.usb.UsbDevice
 import android.hardware.usb.UsbDeviceConnection
 import android.hardware.usb.UsbManager
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import android.widget.Button
+import android.widget.TextView
+import androidx.appcompat.app.AppCompatActivity
+import com.example.myapplication.databinding.ActivityMainBinding
 import com.felhr.usbserial.UsbSerialDevice
 import com.felhr.usbserial.UsbSerialInterface
-import java.lang.Exception
+import com.felhr.usbserial.UsbSerialInterface.UsbReadCallback
 
 
-class LoginActivity : AppCompatActivity() {
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_login)
-    }
-
-}
-
-class PageActivity : AppCompatActivity() {
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_select)
-    }
-}
 
 class MainActivity : AppCompatActivity() {
 
-    lateinit var m_usbManager: UsbManager
-    var m_device: UsbDevice? = null
-    var m_serial: UsbSerialDevice? = null
-    var m_connection: UsbDeviceConnection? = null
+    private lateinit var binding: ActivityMainBinding
+
+    lateinit var usbManager: UsbManager
+    var usbDevice: UsbDevice? = null
+    var usbSerialDevice: UsbSerialDevice? = null
+    var usbDeviceConnection: UsbDeviceConnection? = null
 
     val ACTION_USB_PERMISSION = "permission"
 
 
+    private lateinit var myTextView: TextView
+
+    private lateinit var statusConnectionTextView: TextView
+
+
+    @SuppressLint("MissingInflatedId")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
 
-        m_usbManager = getSystemService(Context.USB_SERVICE) as UsbManager
+        binding = ActivityMainBinding.inflate(layoutInflater)
 
-        val btnGoToLogin: Button = findViewById(R.id.btnGoToLogin)
-        btnGoToLogin.setOnClickListener {
+
+        binding.btnGoTologin.setOnClickListener {
             val intent = Intent(this, LoginActivity::class.java)
             startActivity(intent)
         }
 
+        setContentView(binding.root)
+
+        binding.tela2Btn.setOnClickListener {
+            val intent = Intent(this, Tela2::class.java)
+            startActivity(intent)
+        }
+
+        // view elements
         val on = findViewById<Button>(R.id.on)
         val off = findViewById<Button>(R.id.off)
         val disconnect = findViewById<Button>(R.id.disconnect)
         val connect = findViewById<Button>(R.id.connect)
 
-        val filter = IntentFilter()
-        filter.addAction(ACTION_USB_PERMISSION)
-        filter.addAction(UsbManager.ACTION_USB_ACCESSORY_ATTACHED)
-        filter.addAction(UsbManager.ACTION_USB_DEVICE_ATTACHED)
-        registerReceiver(broadcastReceiver, filter)
+        myTextView = findViewById(R.id.textView)
+
+        statusConnectionTextView = findViewById(R.id.statusConnectedTextViewId)
+
+        startUsbService()
 
         on.setOnClickListener { sendData("a") } //97
         off.setOnClickListener { sendData("b") }
@@ -74,64 +78,29 @@ class MainActivity : AppCompatActivity() {
         connect.setOnClickListener { startUsbConnecting() }
     }
 
+    private fun startUsbService() {
+        usbManager = getSystemService(Context.USB_SERVICE) as UsbManager
 
-    private fun startUsbConnecting1() {
-        Log.i("serial", "starting connections")
-
-        val usbDevices: HashMap<String, UsbDevice>? = m_usbManager.deviceList
-        if (!usbDevices?.isEmpty()!!) {
-            var keep = true
-            usbDevices.forEach { entry ->
-                m_device = entry.value
-                val deviceVendorId: Int? = m_device?.vendorId
-                Log.i("serial", "vendorId: " + deviceVendorId)
-                if (deviceVendorId == 1027) {
-                    val intent: PendingIntent = PendingIntent.getBroadcast(
-                        this,
-                        0,
-                        Intent(ACTION_USB_PERMISSION),
-                        PendingIntent.FLAG_IMMUTABLE
-                    )
-                    m_usbManager.requestPermission(m_device, intent)
-                    keep = false
-                    Log.i("serial", "connection successful")
-                } else {
-                    m_connection = null
-                    m_device = null
-                    Log.i("serial", "unable to connect")
-                }
-                if (!keep) {
-                    return
-                }
-            }
-        } else {
-            Log.i("serial", "no usb device connected")
-        }
+        val filter = IntentFilter()
+        filter.addAction(ACTION_USB_PERMISSION)
+        filter.addAction(UsbManager.ACTION_USB_ACCESSORY_ATTACHED)
+        filter.addAction(UsbManager.ACTION_USB_DEVICE_ATTACHED)
+        registerReceiver(broadcastReceiver, filter)
     }
+
 
     private fun startUsbConnecting() {
         Log.i("serial", "starting connections")
 
-        val usbDevices: HashMap<String, UsbDevice>? = m_usbManager.deviceList
+        val usbDevices: HashMap<String, UsbDevice>? = usbManager.deviceList
 
         if (!usbDevices?.isEmpty()!!) {
-            var keep = true
             usbDevices.forEach { entry ->
 
                 try {
-                    val al = AlertDialog.Builder(this)
-                    al.setTitle("abs")
-                    al.setMessage("devices ${usbDevices}")
-                    al.show()
-
-                    m_device = entry.value
-                    val deviceVendorId: Int? = m_device?.vendorId
+                    usbDevice = entry.value
+                    val deviceVendorId: Int? = usbDevice?.vendorId
                     Log.i("serial", "vendorId: " + deviceVendorId)
-
-                    val al2 = AlertDialog.Builder(this)
-                    al2.setTitle("id")
-                    al2.setMessage("m_device ${m_device}")
-                    al2.show()
 
                     val intent: PendingIntent = PendingIntent.getBroadcast(
                         this,
@@ -140,14 +109,12 @@ class MainActivity : AppCompatActivity() {
                         PendingIntent.FLAG_MUTABLE
                     )
 
-                    m_usbManager.requestPermission(m_device, intent)
+                    usbManager.requestPermission(usbDevice, intent)
 
-                    keep = false
-                    Log.i("serial", "connection successful")
-
-                    if (!keep) {
-                        return
-                    }
+                    val al2 = AlertDialog.Builder(this)
+                    al2.setTitle("id")
+                    al2.setMessage("usbDevice ${usbDevice!!.manufacturerName}")
+                    al2.show()
 
 
                 } catch (e: Exception) {
@@ -168,30 +135,36 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun sendData(input: String) {
-        m_serial?.write(input.toByteArray())
+    fun sendData(input: String) {
+        usbSerialDevice?.write(input.toByteArray())
         Log.i("serial", "sending data: " + input.toByteArray())
     }
 
     private fun disconnect() {
-        m_serial?.close()
+        usbSerialDevice?.close()
     }
 
     private val broadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
             if (intent?.action!! == ACTION_USB_PERMISSION) {
-                val granted: Boolean =
-                    intent.extras!!.getBoolean(UsbManager.EXTRA_PERMISSION_GRANTED)
+
+                val granted: Boolean = intent.extras!!.getBoolean(UsbManager.EXTRA_PERMISSION_GRANTED)
+
                 if (granted) {
-                    m_connection = m_usbManager.openDevice(m_device)
-                    m_serial = UsbSerialDevice.createUsbSerialDevice(m_device, m_connection)
-                    if (m_serial != null) {
-                        if (m_serial!!.open()) {
-                            m_serial!!.setBaudRate(9600)
-                            m_serial!!.setDataBits(UsbSerialInterface.DATA_BITS_8)
-                            m_serial!!.setStopBits(UsbSerialInterface.STOP_BITS_1)
-                            m_serial!!.setParity(UsbSerialInterface.PARITY_NONE)
-                            m_serial!!.setFlowControl(UsbSerialInterface.FLOW_CONTROL_OFF)
+
+                    usbDeviceConnection = usbManager.openDevice(usbDevice)
+                    usbSerialDevice = UsbSerialDevice.createUsbSerialDevice(usbDevice, usbDeviceConnection)
+                    if (usbSerialDevice != null) {
+                        if (usbSerialDevice!!.open()) {
+                            usbSerialDevice!!.setBaudRate(9600)
+                            usbSerialDevice!!.setDataBits(UsbSerialInterface.DATA_BITS_8)
+                            usbSerialDevice!!.setStopBits(UsbSerialInterface.STOP_BITS_1)
+                            usbSerialDevice!!.setParity(UsbSerialInterface.PARITY_NONE)
+                            usbSerialDevice!!.setFlowControl(UsbSerialInterface.FLOW_CONTROL_OFF)
+                            usbSerialDevice!!.read(usbSerialListener)
+
+                            statusConnectionTextView.text = "Connected Success!"
+
                         } else {
                             Log.i("Serial", "port not open")
                         }
@@ -202,12 +175,35 @@ class MainActivity : AppCompatActivity() {
                     Log.i("Serial", "permission not granted")
                 }
             } else if (intent.action == UsbManager.ACTION_USB_DEVICE_ATTACHED) {
-                startUsbConnecting()
+                // abre coenxao assim que insere o cabo USB
+                //startUsbConnecting()
             } else if (intent.action == UsbManager.ACTION_USB_DEVICE_DETACHED) {
+                statusConnectionTextView.text = "No Connected"
                 disconnect()
+
             }
         }
     }
+
+
+    private val usbSerialListener = object : UsbReadCallback {
+        override fun onReceivedData(data: ByteArray) {
+            try {
+
+                val receivedString = String(data)
+                Log.i("======RECEIVE", receivedString)
+
+                if (receivedString.isNotEmpty()){
+
+                    myTextView.text = receivedString
+                }
+
+            } catch (e: Exception) {
+                myTextView.text = e.message
+            }
+        }
+    }
+
 
 
 }

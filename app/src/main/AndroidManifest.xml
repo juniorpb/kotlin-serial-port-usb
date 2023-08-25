@@ -15,6 +15,15 @@
         <activity android:name=".LoginActivity" />
         <activity android:name=".PageActivity" />
         <activity
+            android:name=".HomeActivity"
+            android:exported="false" />
+        <activity
+            android:name=".LoginActivity"
+            android:exported="false" />
+        <activity
+            android:name=".Tela2"
+            android:exported="false" />
+        <activity
             android:name=".MainActivity"
 
             android:exported="true">
