@@ -5,5 +5,9 @@
     <string name="connect">connect</string>
     <string name="disconnect">disconnect</string>
     <string name="tela_2_btn">Tela DOIS</string>
+    <string name="btn_login">Tela login</string>
+    <string name="logo_description">logo inteliampo</string>
+    <string name="btnAnimalText">Animal\n</string>
+    <string name="btnFarmText">Fazenda</string>
 
 </resources>

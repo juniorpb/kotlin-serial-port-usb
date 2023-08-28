@@ -22,6 +22,8 @@ import com.felhr.usbserial.UsbSerialInterface
 import com.felhr.usbserial.UsbSerialInterface.UsbReadCallback
 
 
+
+
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
@@ -32,6 +34,7 @@ class MainActivity : AppCompatActivity() {
     var usbDeviceConnection: UsbDeviceConnection? = null
 
     val ACTION_USB_PERMISSION = "permission"
+
 
     private lateinit var myTextView: TextView
 
@@ -44,11 +47,17 @@ class MainActivity : AppCompatActivity() {
 
         binding = ActivityMainBinding.inflate(layoutInflater)
 
+
+        binding.btnGoTologin.setOnClickListener {
+            val intent = Intent(this, LoginActivity::class.java)
+            startActivity(intent)
+        }
+
         setContentView(binding.root)
 
         binding.tela2Btn.setOnClickListener {
-            val navegarSegundaTEla = Intent(this, Tela2::class.java)
-            startActivity(navegarSegundaTEla)
+            val intent = Intent(this, Tela2::class.java)
+            startActivity(intent)
         }
 
         // view elements
