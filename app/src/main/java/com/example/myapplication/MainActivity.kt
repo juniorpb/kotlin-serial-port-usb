@@ -1,5 +1,4 @@
 package com.example.myapplication
-
 import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.app.PendingIntent
@@ -13,8 +12,11 @@ import android.hardware.usb.UsbManager
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.widget.ArrayAdapter
+import android.widget.AutoCompleteTextView
 import android.widget.Button
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.myapplication.databinding.ActivityMainBinding
 import com.felhr.usbserial.UsbSerialDevice
@@ -25,6 +27,12 @@ import com.felhr.usbserial.UsbSerialInterface.UsbReadCallback
 
 
 class MainActivity : AppCompatActivity() {
+
+    val items = arrayOf("Material", "Design", "Components", "Android", "5.8 Lollipop")
+
+
+
+
 
     private lateinit var binding: ActivityMainBinding
 
@@ -44,6 +52,22 @@ class MainActivity : AppCompatActivity() {
     @SuppressLint("MissingInflatedId")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_animal_forms)
+
+        val items = arrayOf("Gato", "Cachorro", "Pássaro", "Peixe", "Coelho")
+
+        val autoCompleteTxt = findViewById<AutoCompleteTextView>(R.id.auto_complete_txt)
+        val adapterItems = ArrayAdapter(this, R.layout.list_item, items)
+        autoCompleteTxt.setAdapter(adapterItems)
+
+        autoCompleteTxt.setOnItemClickListener { parent, _, position, _ ->
+            val item = parent.getItemAtPosition(position).toString()
+            Toast.makeText(
+                applicationContext,
+                "Item selecionado: $item",
+                Toast.LENGTH_SHORT
+            ).show()
+        }
 
         binding = ActivityMainBinding.inflate(layoutInflater)
 
