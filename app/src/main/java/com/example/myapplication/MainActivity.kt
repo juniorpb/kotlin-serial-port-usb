@@ -47,10 +47,22 @@ class MainActivity : AppCompatActivity() {
 
         binding = ActivityMainBinding.inflate(layoutInflater)
 
-
         binding.btnGoTologin.setOnClickListener {
             val intent = Intent(this, LoginActivity::class.java)
             startActivity(intent)
+        }
+
+        binding.btnAntennaConfig.setOnClickListener {
+            Log.i("TEST","====== ANTENNA CONFIGURATION ======")
+
+            //antennaConfiguration(1)
+
+
+            for (i in 1..5) {
+                antennaConfiguration(i)
+                Thread.sleep(5) // Atraso de 1 segundo
+            }
+
         }
 
         setContentView(binding.root)
@@ -113,7 +125,7 @@ class MainActivity : AppCompatActivity() {
 
                     val al2 = AlertDialog.Builder(this)
                     al2.setTitle("id")
-                    al2.setMessage("usbDevice ${usbDevice!!.manufacturerName}")
+                    al2.setMessage("usbDevice ${usbDevice.toString()}")
                     al2.show()
 
 
@@ -135,10 +147,21 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    fun sendData(input: String) {
+    private fun sendData(input: String) {
         usbSerialDevice?.write(input.toByteArray())
         Log.i("serial", "sending data: " + input.toByteArray())
     }
+
+    private fun sendDataByte(input: UByteArray) {
+        usbSerialDevice?.write(input.toByteArray())
+        Log.i("serial", "sending BYTE data: " + input.toByteArray())
+    }
+
+    private fun sendDataUByte(input: UByte) {
+        usbSerialDevice?.write(byteArrayOf(input.toByte()))
+        Log.i("serial", "sending BYTE data: " + input.toInt().toByte())
+    }
+
 
     private fun disconnect() {
         usbSerialDevice?.close()
@@ -156,7 +179,7 @@ class MainActivity : AppCompatActivity() {
                     usbSerialDevice = UsbSerialDevice.createUsbSerialDevice(usbDevice, usbDeviceConnection)
                     if (usbSerialDevice != null) {
                         if (usbSerialDevice!!.open()) {
-                            usbSerialDevice!!.setBaudRate(9600)
+                            usbSerialDevice!!.setBaudRate(57600)
                             usbSerialDevice!!.setDataBits(UsbSerialInterface.DATA_BITS_8)
                             usbSerialDevice!!.setStopBits(UsbSerialInterface.STOP_BITS_1)
                             usbSerialDevice!!.setParity(UsbSerialInterface.PARITY_NONE)
@@ -187,21 +210,221 @@ class MainActivity : AppCompatActivity() {
 
 
     private val usbSerialListener = object : UsbReadCallback {
+        fun ByteArray.toHexString() = joinToString(",") { "%02X".format(it) }
+
         override fun onReceivedData(data: ByteArray) {
             try {
 
-                val receivedString = String(data)
+                val receivedString = data.toHexString()
+
+                val RFIDArray = receivedString.split(",").toTypedArray()
+
+
                 Log.i("======RECEIVE", receivedString)
 
                 if (receivedString.isNotEmpty()){
 
-                    myTextView.text = receivedString
+
+
+                    for ((i, value) in data.withIndex()) {
+                        println("=== tagBuffer[$i] = ${value}")
+
+                        if(value.toInt() == 21) {
+
+                            println("=== RFID =================")
+
+                            var rfidText = ""
+                            for (i in 7..18) {
+                                print(RFIDArray[i])
+                                rfidText += RFIDArray[i]
+                            }
+
+                            myTextView.text = rfidText
+
+
+                        }
+
+                    }
                 }
 
             } catch (e: Exception) {
                 myTextView.text = e.message
             }
         }
+    }
+
+
+
+    // CONFIGURAR ANTENA =====================
+
+    fun uiCrc16Cal(tagBuffer: UByteArray): Long {
+        val polynomial: Long = 0x8408
+        var crc: Long = 0xFFFF
+
+        for (b in tagBuffer) {
+            crc = crc xor b.toLong()
+            for (i in 8 downTo 1) {
+                if ((crc and 0x0001) != 0L) {
+                    crc = (crc ushr 1) xor polynomial
+                } else {
+                    crc = crc ushr 1
+                }
+            }
+        }
+
+        return crc
+    }
+
+
+    fun writeCommand2(address: UByte, cmd: UByte) {
+
+        val tagBuffer: UByteArray = ubyteArrayOf(
+            4u, // len
+            address, // address
+            cmd, // cmd
+        )
+
+        val crc = uiCrc16Cal(tagBuffer)
+        val msb = (crc ushr 8).toUByte()
+        val lsb = (crc and 0xFF).toUByte()
+
+        val tagBufferWithCrc = tagBuffer + ubyteArrayOf(lsb, msb)
+
+        println("CRC = $crc")
+
+        for ((i, value) in tagBufferWithCrc.withIndex()) {
+            println("tagBuffer[$i] = $value")
+            sendDataUByte(value)
+
+        }
+
+        //sendDataByte(tagBufferWithCrc)
+
+    }
+
+    fun writeCommand3(address: UByte, cmd: UByte, data: UByteArray) {
+
+        val dimData = data.size.toUByte()
+
+        val commandInit: UByteArray = ubyteArrayOf(
+            (4u + dimData).toUByte(), // len
+            address, // address
+            cmd, // cmd
+        )
+
+        val commandInitWithData = commandInit + data
+
+        val crc = uiCrc16Cal(commandInitWithData)
+
+        val msb = (crc ushr 8).toUByte()
+        val lsb = (crc and 0xFF).toUByte()
+
+        val tagBufferWithCrc = commandInitWithData + ubyteArrayOf(lsb, msb)
+
+        for ((i, value) in tagBufferWithCrc.withIndex()) {
+            println("tagBuffer[$i] = $value")
+            sendDataUByte(value)
+
+        }
+
+        //for ((i, value) in tagBufferWithCrc.withIndex()) {
+          //  println("tagBuffer[$i] = $value")
+        //}
+
+        //sendDataByte(tagBufferWithCrc)
+
+    }
+
+    fun writeCommand31(address: UByte, cmd: UByte, data: UByte) {
+
+        val tagBuffer: UByteArray = ubyteArrayOf(
+            4u, // len
+            address, // address
+            cmd, // cmd
+            data,
+        )
+
+        val crc = uiCrc16Cal(tagBuffer)
+        val msb = (crc ushr 8).toUByte()
+        val lsb = (crc and 0xFF).toUByte()
+
+        val tagBufferWithCrc = tagBuffer + ubyteArrayOf(lsb, msb)
+
+        println("CRC = $crc")
+
+        for ((i, value) in tagBufferWithCrc.withIndex()) {
+            println("tagBuffer[$i] = $value")
+            sendDataUByte(value)
+
+        }
+
+        //sendDataByte(tagBufferWithCrc)
+
+    }
+
+
+    fun getSerialNumber() {
+        println("starting getSerialNumber()")
+        writeCommand2(0u, 76u)
+    }
+
+    fun setRegionRFID() {
+        println("starting setRegionRFID()")
+
+        val data: UByteArray = ubyteArrayOf(0x31.toUByte(), 0x80.toUByte())
+        writeCommand3(0u, 34u, data)
+    }
+
+    fun setPower(power: Int) {
+        println("starting setPower()")
+
+        var powerData = power
+        if(power > 30) {
+            powerData = 30
+        }
+
+        writeCommand31(0x00.toUByte(), 0x2F.toUByte(), powerData.toUByte())
+    }
+
+    fun setScanTime() {
+        println("starting setScanTime()")
+
+        writeCommand31(0x00.toUByte(), 0x25.toUByte(), 0x03.toUByte())
+    }
+
+    fun getSingleTag() {
+        println("starting getSingleTag()")
+
+        writeCommand2(0x00.toUByte(), 0x0F.toUByte())
+    }
+
+    fun antennaConfiguration(command: Int) {
+
+        try {
+            if (command == 1) {
+                getSerialNumber()
+            }
+
+            if (command == 2) {
+                setRegionRFID()
+            }
+
+            if (command == 3) {
+                setPower(2)
+            }
+
+            if (command == 4) {
+                setScanTime()
+            }
+
+            if (command == 5) {
+                getSingleTag()
+            }
+
+        } catch (e: Exception) {
+            Log.i("error", "error to config antenna ${e.message}")
+        }
+
     }
 
 
