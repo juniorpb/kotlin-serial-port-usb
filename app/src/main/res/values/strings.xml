@@ -10,5 +10,6 @@
     <string name="btnAnimalText">Animal\n</string>
     <string name="btnFarmText">Fazenda</string>
     <string name="btn_antenna_config">Configurar Antena</string>
+    <string name="selectRace">Select Race</string>
 
 </resources>
