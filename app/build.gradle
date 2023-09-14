@@ -57,4 +57,9 @@ dependencies {
     implementation 'com.google.android.material:material:1.8.0'
 
     implementation 'com.github.felHR85:UsbSerial:6.1.0'
+
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.5.2'
+    implementation 'com.google.android.material:material:1.6.0'
+
+
 }
