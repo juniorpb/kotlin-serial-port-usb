@@ -38,8 +38,7 @@
             android:id="@+id/textTatuagemLayout"
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="4dp"
+            android:layout_height="60dp"
             android:hint="Tatuagem">
 
             <com.google.android.material.textfield.TextInputEditText
@@ -52,11 +51,27 @@
         <com.google.android.material.textfield.TextInputLayout
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense.ExposedDropdownMenu"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="60dp"
+
             android:hint="@string/selectRace">
 
             <AutoCompleteTextView
-                android:id="@+id/auto_complete_txt"
+                android:id="@+id/select_race_animal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="none" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+
+        <com.google.android.material.textfield.TextInputLayout
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense.ExposedDropdownMenu"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:hint="@string/selectSex">
+
+            <AutoCompleteTextView
+                android:id="@+id/select_sex_animal"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:inputType="none" />
