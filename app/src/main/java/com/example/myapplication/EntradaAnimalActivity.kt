@@ -6,12 +6,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Looper
-import android.util.Log
-import android.view.View
 import android.widget.ArrayAdapter
-import android.widget.TextView
-import com.example.myapplication.databinding.ActivityEntradaAnimalBinding
-import com.example.myapplication.databinding.ActivityHomeBinding
 import java.util.UUID
 import android.widget.AdapterView
 import android.widget.Button
@@ -61,7 +56,15 @@ class EntradaAnimalActivity : AppCompatActivity() {
             val tattoo = tattooEditText.text.toString()
             val rfid = rfidEditText.toString()
 
-            sendDataToApi(sex, race, tattoo, type, rfid)
+            if(selectedSex == "Sexo do Animal" || selectedRace == "Raça do Animal" || selectedType == "Tipo do Animal"){
+
+                val handler = Handler(Looper.getMainLooper())
+                handler.post {
+                    Toast.makeText(this@EntradaAnimalActivity, "Erro ao cadastrar o animal", Toast.LENGTH_SHORT).show()
+                }
+            }else{
+                sendDataToApi(sex, race, tattoo, type, rfid)
+            }
         }
     }
 
@@ -81,9 +84,6 @@ class EntradaAnimalActivity : AppCompatActivity() {
         selectRaceAnimalSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parentView: AdapterView<*>?, selectedItemView: android.view.View?, position: Int, id: Long) {
                 selectedRace = selectRaceAnimalList[position]
-                if(selectRaceAnimalList[position]==="Raça do Animal"){
-                    selectedRace = ""
-                }
 
             }
 
@@ -103,9 +103,6 @@ class EntradaAnimalActivity : AppCompatActivity() {
                     selectedSex = "FEMALE"
                 }
 
-                if(selectSexAnimalList[position]==="Sexo do Animal"){
-                    selectedSex = ""
-                }
             }
 
             override fun onNothingSelected(parentView: AdapterView<*>?) {
@@ -117,9 +114,6 @@ class EntradaAnimalActivity : AppCompatActivity() {
             override fun onItemSelected(parentView: AdapterView<*>?, selectedItemView: android.view.View?, position: Int, id: Long) {
                 selectedType = selectTypeAnimalList[position]
 
-                if(selectTypeAnimalList[position]==="Tipo do Animal"){
-                    selectedType = ""
-                }
             }
 
             override fun onNothingSelected(parentView: AdapterView<*>?) {
@@ -128,7 +122,7 @@ class EntradaAnimalActivity : AppCompatActivity() {
         }
     }
 
-    private fun sendDataToApi(sex: String, race: String, tattoo: String, type: String, rfid: String) {
+    private fun sendDataToApi(sex: String?, race: String, tattoo: String, type: String, rfid: String) {
         val apiUrl = "https://intelicampo-api-stg.vercel.app/animal"  // Substitua pela URL correta da sua API
 
         GlobalScope.launch(Dispatchers.IO) {
