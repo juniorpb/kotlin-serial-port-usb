@@ -12,5 +12,7 @@
     <string name="btn_antenna_config">Configurar Antena</string>
     <string name="selectRace">Raça do animal</string>
     <string name="selectSex">Sexo do animal</string>
+    <string name="selectType">Tipo do animal</string>
+
 
 </resources>

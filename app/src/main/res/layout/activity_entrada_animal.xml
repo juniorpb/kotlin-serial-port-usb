@@ -11,7 +11,8 @@
         android:id="@+id/appBarLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+        tools:ignore="MissingConstraints">
 
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"
@@ -25,64 +26,63 @@
     </com.google.android.material.appbar.AppBarLayout>
 
     <LinearLayout
-        android:layout_width="386dp"
-        android:layout_height="643dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:layout_margin="16dp"
+        android:padding="16dp"
         android:orientation="vertical"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/appBarLayout">
 
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/textTatuagemLayout"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
+
+        <EditText
+            android:id="@+id/textTatuagem"
+            style="@style/Widget.Material3.AutoCompleteTextView.FilledBox.Dense"
             android:layout_width="match_parent"
-            android:layout_height="60dp"
-            android:hint="Tatuagem">
+            android:layout_height="59dp"
 
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/textTatuagem"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+            android:layout_marginBottom="8dp"
+            android:gravity="start|center_vertical"
+            android:hint="Tatuagem"
+            android:inputType="text"
+            android:padding="12dp"
 
-        </com.google.android.material.textfield.TextInputLayout>
+            android:textSize="16sp" />
 
-        <com.google.android.material.textfield.TextInputLayout
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense.ExposedDropdownMenu"
+        <Spinner
+            android:id="@+id/select_race_animal"
+            style="@android:style/Widget.DeviceDefault.Spinner"
             android:layout_width="match_parent"
-            android:layout_height="60dp"
+            android:layout_height="55dp"
+            android:layout_marginBottom="8dp"
+            android:dropDownWidth="match_parent"
+            android:spinnerMode="dropdown" />
 
-            android:hint="@string/selectRace">
-
-            <AutoCompleteTextView
-                android:id="@+id/select_race_animal"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="none" />
-
-        </com.google.android.material.textfield.TextInputLayout>
-
-
-        <com.google.android.material.textfield.TextInputLayout
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense.ExposedDropdownMenu"
+        <Spinner
+            android:id="@+id/select_sex_animal"
+            style="@android:style/Widget.DeviceDefault.Spinner"
             android:layout_width="match_parent"
-            android:layout_height="60dp"
-            android:hint="@string/selectSex">
+            android:layout_height="55dp"
+            android:layout_marginBottom="8dp"
+            android:dropDownWidth="match_parent"
+            android:spinnerMode="dropdown" />
 
-            <AutoCompleteTextView
-                android:id="@+id/select_sex_animal"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="none" />
+        <Spinner
+            android:id="@+id/select_type_animal"
+            style="@android:style/Widget.DeviceDefault.Spinner"
+            android:layout_width="match_parent"
+            android:layout_height="55dp"
+            android:layout_marginBottom="8dp"
+            android:dropDownWidth="match_parent"
+            android:spinnerMode="dropdown" />
 
-        </com.google.android.material.textfield.TextInputLayout>
 
         <Button
             android:id="@+id/btnLeituraRFID"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@id/etPassword"
             android:layout_marginTop="24dp"
             android:backgroundTint="#3EA1FE"
             android:backgroundTintMode="add"
@@ -92,7 +92,7 @@
             android:textColor="#fff"
             android:textSize="16sp"
             android:textStyle="bold" />
-
     </LinearLayout>
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>
