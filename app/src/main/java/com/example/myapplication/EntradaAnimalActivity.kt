@@ -5,6 +5,7 @@ import android.os.Handler
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.os.Looper
 import android.util.Log
 import android.view.View
 import android.widget.ArrayAdapter
@@ -24,6 +25,8 @@ import org.json.JSONObject
 import java.io.OutputStreamWriter
 import java.net.HttpURLConnection
 import java.net.URL
+import androidx.appcompat.widget.Toolbar
+
 
 class EntradaAnimalActivity : AppCompatActivity() {
 
@@ -63,9 +66,9 @@ class EntradaAnimalActivity : AppCompatActivity() {
     }
 
     private fun setupSpinners() {
-        val selectRaceAnimalList = arrayOf("Nelore", "Angus", "Brahman", "Brangus", "Senepol")
-        val selectSexAnimalList = arrayOf("MALE", "FEMALE")
-        val selectTypeAnimalList = arrayOf("BEZERRO", "GARROTE", "NOVILHA", "ADULTO")
+        val selectRaceAnimalList = arrayOf("Raça do Animal","Nelore", "Angus", "Brahman", "Brangus", "Senepol")
+        val selectSexAnimalList = arrayOf("Sexo do Animal","Macho", "Femea")
+        val selectTypeAnimalList = arrayOf("Tipo do Animal","BEZERRO", "GARROTE", "NOVILHA", "ADULTO")
 
         val selectRaceAnimalAdapter = ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line, selectRaceAnimalList)
         val selectSexAnimalAdapter = ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line, selectSexAnimalList)
@@ -78,6 +81,10 @@ class EntradaAnimalActivity : AppCompatActivity() {
         selectRaceAnimalSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parentView: AdapterView<*>?, selectedItemView: android.view.View?, position: Int, id: Long) {
                 selectedRace = selectRaceAnimalList[position]
+                if(selectRaceAnimalList[position]==="Raça do Animal"){
+                    selectedRace = ""
+                }
+
             }
 
             override fun onNothingSelected(parentView: AdapterView<*>?) {
@@ -88,6 +95,17 @@ class EntradaAnimalActivity : AppCompatActivity() {
         selectSexAnimalSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parentView: AdapterView<*>?, selectedItemView: android.view.View?, position: Int, id: Long) {
                 selectedSex = selectSexAnimalList[position]
+
+                if(selectSexAnimalList[position]==="Macho"){
+                    selectedSex = "MALE"
+                }
+                if(selectSexAnimalList[position]==="Femea"){
+                    selectedSex = "FEMALE"
+                }
+
+                if(selectSexAnimalList[position]==="Sexo do Animal"){
+                    selectedSex = ""
+                }
             }
 
             override fun onNothingSelected(parentView: AdapterView<*>?) {
@@ -98,6 +116,10 @@ class EntradaAnimalActivity : AppCompatActivity() {
         selectTypeAnimalSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parentView: AdapterView<*>?, selectedItemView: android.view.View?, position: Int, id: Long) {
                 selectedType = selectTypeAnimalList[position]
+
+                if(selectTypeAnimalList[position]==="Tipo do Animal"){
+                    selectedType = ""
+                }
             }
 
             override fun onNothingSelected(parentView: AdapterView<*>?) {
@@ -132,19 +154,24 @@ class EntradaAnimalActivity : AppCompatActivity() {
 
                 val responseCode = connection.responseCode
                 if (responseCode == 201) {
-                    // A API retornou um código 201 (Created)
-                    // Exibe um toast informando que a operação foi bem-sucedida
-                    withContext(Dispatchers.Main) {
+
+                    val handler = Handler(Looper.getMainLooper())
+                    handler.post {
                         Toast.makeText(this@EntradaAnimalActivity, "Animal cadastrado com sucesso!", Toast.LENGTH_SHORT).show()
                     }
+
+                    handler.postDelayed({
+                        val intent = Intent(this@EntradaAnimalActivity, HomeActivity::class.java)
+                        startActivity(intent)
+                        finish()
+                    }, 100)
                 } else {
-                    // Se a resposta não for 201, algo deu errado na API
-                    // Exiba uma mensagem de erro, se desejar
-                    withContext(Dispatchers.Main) {
+
+                    val handler = Handler(Looper.getMainLooper())
+                    handler.post {
                         Toast.makeText(this@EntradaAnimalActivity, "Erro ao cadastrar o animal", Toast.LENGTH_SHORT).show()
                     }
                 }
-
                 connection.disconnect()
             } catch (e: Exception) {
                 e.printStackTrace()

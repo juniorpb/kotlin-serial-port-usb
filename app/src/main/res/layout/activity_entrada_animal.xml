@@ -28,7 +28,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="16dp"
+        android:layout_marginTop="16dp"
         android:padding="16dp"
         android:orientation="vertical"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
@@ -39,21 +39,21 @@
 
         <EditText
             android:id="@+id/textTatuagem"
-            style="@style/Widget.Material3.AutoCompleteTextView.FilledBox.Dense"
+            style="@style/SpinnerWithGrayBorders"
             android:layout_width="match_parent"
-            android:layout_height="59dp"
-
+            android:layout_height="55dp"
             android:layout_marginBottom="8dp"
-            android:gravity="start|center_vertical"
             android:hint="Tatuagem"
             android:inputType="text"
             android:padding="12dp"
 
+            android:textColor="#3A3A3A"
+            android:textColorHint="#3A3A3A"
             android:textSize="16sp" />
 
         <Spinner
             android:id="@+id/select_race_animal"
-            style="@android:style/Widget.DeviceDefault.Spinner"
+            style="@style/SpinnerWithGrayBorders"
             android:layout_width="match_parent"
             android:layout_height="55dp"
             android:layout_marginBottom="8dp"
@@ -62,35 +62,35 @@
 
         <Spinner
             android:id="@+id/select_sex_animal"
-            style="@android:style/Widget.DeviceDefault.Spinner"
+            style="@style/SpinnerWithGrayBorders"
             android:layout_width="match_parent"
             android:layout_height="55dp"
             android:layout_marginBottom="8dp"
             android:dropDownWidth="match_parent"
-            android:spinnerMode="dropdown" />
+            android:spinnerMode="dropdown"/>
 
         <Spinner
             android:id="@+id/select_type_animal"
-            style="@android:style/Widget.DeviceDefault.Spinner"
+            style="@style/SpinnerWithGrayBorders"
             android:layout_width="match_parent"
             android:layout_height="55dp"
             android:layout_marginBottom="8dp"
             android:dropDownWidth="match_parent"
-            android:spinnerMode="dropdown" />
+            android:spinnerMode="dropdown"/>
 
 
         <Button
             android:id="@+id/btnLeituraRFID"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="67dp"
             android:layout_marginTop="24dp"
             android:backgroundTint="#3EA1FE"
             android:backgroundTintMode="add"
             android:padding="12dp"
-            android:text="Efetuar a Leitura do RFID"
+            android:text="Cadastrar Animal"
             android:textAppearance="@style/TextAppearance.AppCompat.Body1"
             android:textColor="#fff"
-            android:textSize="16sp"
+            android:textSize="20sp"
             android:textStyle="bold" />
     </LinearLayout>
 

@@ -1,4 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
+
+
+
+
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -6,70 +10,153 @@
     android:layout_height="match_parent"
     tools:context=".HomeActivity">
 
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/appBarLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+        tools:ignore="MissingConstraints">
 
-    <Button
-        android:id="@+id/btnAnimal"
-        style="@style/Widget.Material3.ExtendedFloatingActionButton.Tertiary"
-        android:layout_width="180dp"
-        android:layout_height="125dp"
-        android:layout_marginStart="4dp"
-        android:layout_marginTop="104dp"
-        android:layout_marginEnd="4dp"
-        android:backgroundTint="#3EA1FE"
-        android:text="Animal"
-        android:textColor="#FFFFFF"
-        android:textSize="20sp"
-        app:layout_constraintEnd_toStartOf="@+id/btnFazenda"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="#2196F3"
+            app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+            app:title="Home" />
 
-    <Button
-        android:id="@+id/btnSincronizar"
-        style="@style/Widget.Material3.ExtendedFloatingActionButton.Tertiary"
-        android:layout_width="180dp"
-        android:layout_height="124dp"
-        android:layout_marginStart="4dp"
-        android:layout_marginTop="276dp"
-        android:layout_marginEnd="4dp"
-        android:backgroundTint="#F15A5A"
-        android:text="Sincronizar"
-        android:textColor="#FAFAFA"
-        android:textSize="20sp"
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:padding="14dp"
+            >
+
+            <TextView
+                android:id="@+id/textView5"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/roboto_medium"
+                android:text="Bem Vindo a sua Fazenda"
+                android:textAppearance="@style/TextAppearance.AppCompat.Display1"
+                android:textColor="#3E3D3D"
+                android:textSize="34sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/textView6"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/roboto"
+                android:text="Ola, Pedro Leite"
+                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                android:textColor="#7A7979"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        tools:context=".HomeActivity"
+        android:layout_margin="10dp"
+        android:padding="6dp"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/btnEntradaAnimal"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <Button
-        android:id="@+id/btnFazenda"
-        style="@style/Widget.Material3.ExtendedFloatingActionButton.Tertiary"
-        android:layout_width="180dp"
-        android:layout_height="126dp"
-        android:layout_marginStart="4dp"
-        android:layout_marginTop="104dp"
-        android:layout_marginEnd="4dp"
-        android:backgroundTint="#3EA1FE"
-        android:text="Fazenda"
-        android:textColor="#FAFAFA"
-        android:textSize="20sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/btnAnimal"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <Button
-        android:id="@+id/btnEntradaAnimal"
-        style="@style/Widget.Material3.ExtendedFloatingActionButton.Tertiary"
-        android:layout_width="180dp"
-        android:layout_height="125dp"
-        android:layout_marginStart="4dp"
-        android:layout_marginTop="276dp"
-        android:layout_marginEnd="4dp"
-        android:backgroundTint="#3EA1FE"
-        android:text="Entrada de Animal"
-        android:textColor="#FFFFFF"
-        android:textSize="16sp"
-        app:layout_constraintEnd_toStartOf="@+id/btnSincronizar"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/appBarLayout">
+
+
+        <Button
+            android:id="@+id/btnEntradaAnimal"
+            style="@style/Widget.Material3.ExtendedFloatingActionButton.Tertiary"
+            android:layout_width="160dp"
+            android:layout_height="125dp"
+            android:layout_marginStart="4dp"
+            android:layout_marginTop="4dp"
+            android:layout_marginEnd="4dp"
+            android:backgroundTint="#3EA1FE"
+            android:fontFamily="@font/roboto_medium"
+            android:text="Entrada de Animal"
+            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+            android:textColor="#FFFFFF"
+            android:textSize="14sp"
+            app:icon="@drawable/cow_add"
+            app:iconGravity="top"
+            app:iconSize="64dp"
+            app:iconTint="#FFFFFF"
+            app:layout_constraintEnd_toStartOf="@+id/btnSincronizar"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <Button
+            android:id="@+id/btnSaidaAnimal"
+            style="@style/Widget.Material3.ExtendedFloatingActionButton.Tertiary"
+            android:layout_width="160dp"
+            android:layout_height="125dp"
+            android:layout_marginStart="4dp"
+            android:layout_marginTop="4dp"
+            android:layout_marginEnd="4dp"
+            android:backgroundTint="#3EA1FE"
+            android:fontFamily="@font/roboto_medium"
+            android:text="Saida de Animal"
+            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+            android:textColor="#FFFFFF"
+            android:textSize="14sp"
+            app:icon="@drawable/cow_remove"
+            app:iconGravity="top"
+            app:iconSize="64dp"
+            app:iconTint="#FFFFFF"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/btnAnimal"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <Button
+            android:id="@+id/btnAnimal"
+            style="@style/Widget.Material3.ExtendedFloatingActionButton.Tertiary"
+            android:layout_width="160dp"
+            android:layout_height="125dp"
+            android:layout_marginStart="4dp"
+            android:layout_marginTop="144dp"
+            android:layout_marginEnd="4dp"
+            android:backgroundTint="#3EA1FE"
+            android:fontFamily="@font/roboto_medium"
+            android:text="Validar RFID"
+            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+            android:textColor="#FFFFFF"
+            android:textSize="14sp"
+            app:icon="@drawable/rfid_valid"
+            app:iconGravity="top"
+            app:iconSize="64dp"
+            app:iconTint="#FFFFFF"
+            app:layout_constraintEnd_toStartOf="@+id/btnSaidaAnimal"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <Button
+            android:id="@+id/btnSincronizar"
+            style="@style/Widget.Material3.ExtendedFloatingActionButton.Tertiary"
+            android:layout_width="160dp"
+            android:layout_height="125dp"
+            android:layout_marginStart="4dp"
+            android:layout_marginTop="144dp"
+            android:layout_marginEnd="4dp"
+            android:backgroundTint="#F15A5A"
+            android:text="Sincronizar"
+            android:fontFamily="@font/roboto_medium"
+            android:textColor="#FAFAFA"
+            android:textSize="14sp"
+            app:icon="@android:drawable/stat_notify_sync_noanim"
+            app:iconGravity="top"
+            app:iconSize="64dp"
+            app:iconTint="#FFFFFF"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/btnEntradaAnimal"
+            app:layout_constraintTop_toTopOf="parent" />
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
