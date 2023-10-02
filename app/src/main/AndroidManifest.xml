@@ -15,6 +15,9 @@
         android:theme="@style/Theme.MyApplication"
         tools:targetApi="31">
         <activity
+            android:name=".RemoveAnimalActivity"
+            android:exported="false" />
+        <activity
             android:name=".FarmsActivity"
             android:exported="false" />
         <activity

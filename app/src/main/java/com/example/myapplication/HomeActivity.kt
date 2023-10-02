@@ -34,12 +34,20 @@ class HomeActivity : AppCompatActivity() {
         }
 
         binding.btnEntradaAnimal.setOnClickListener {
-            val intent = Intent(this, EntradaAnimalActivity::class.java)
+            val intent = Intent(this, ReaderRFIDActivity::class.java)
+            intent.putExtra("tela", "enterAnimal" )
             startActivity(intent)
         }
+
+        binding.btnSaidaAnimal.setOnClickListener {
+            val intent = Intent(this, ReaderRFIDActivity::class.java)
+            intent.putExtra("tela1", "removeAnimal" )
+            startActivity(intent)
+        }
+
+
         val sharedPreferences = getSharedPreferences("UserData", Context.MODE_PRIVATE)
 
-// Ler dados em cache
         val username = sharedPreferences.getString("username", "")
         val selectedFarmName = sharedPreferences.getString("selectedFarmName", "")
 

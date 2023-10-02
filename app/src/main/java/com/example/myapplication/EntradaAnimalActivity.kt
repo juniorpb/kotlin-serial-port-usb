@@ -12,6 +12,7 @@ import android.widget.AdapterView
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Spinner
+import android.widget.TextView
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -32,7 +33,8 @@ class EntradaAnimalActivity : AppCompatActivity() {
     private lateinit var selectTypeAnimalSpinner: Spinner
     private lateinit var tattooEditText: EditText
     private lateinit var sendButton: Button
-    private lateinit var rfidEditText: String
+
+
 
     private var selectedRace: String = ""
     private var selectedSex: String = ""
@@ -47,7 +49,10 @@ class EntradaAnimalActivity : AppCompatActivity() {
         selectTypeAnimalSpinner = findViewById(R.id.select_type_animal)
         tattooEditText = findViewById(R.id.textTatuagem)
         sendButton = findViewById(R.id.btnLeituraRFID)
-        rfidEditText = UUID.randomUUID().toString()
+        val rfid = intent.getStringExtra("RFID").toString()
+
+        val textView = findViewById<TextView>(R.id.rfidText)
+        textView.text = "RFID: ${rfid}"
 
         setupSpinners()
 
@@ -56,7 +61,6 @@ class EntradaAnimalActivity : AppCompatActivity() {
             val race = selectedRace
             val type = selectedType
             val tattoo = tattooEditText.text.toString()
-            val rfid = rfidEditText.toString()
             val currentDateTime = getCurrentDate()
 
             if(selectedSex == "Sexo do Animal" || selectedRace == "Raça do Animal" || selectedType == "Tipo do Animal"){
