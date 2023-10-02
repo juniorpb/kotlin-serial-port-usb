@@ -21,7 +21,9 @@ import java.io.OutputStreamWriter
 import java.net.HttpURLConnection
 import java.net.URL
 import androidx.appcompat.widget.Toolbar
-
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 class EntradaAnimalActivity : AppCompatActivity() {
 
@@ -55,6 +57,7 @@ class EntradaAnimalActivity : AppCompatActivity() {
             val type = selectedType
             val tattoo = tattooEditText.text.toString()
             val rfid = rfidEditText.toString()
+            val currentDateTime = getCurrentDate()
 
             if(selectedSex == "Sexo do Animal" || selectedRace == "Raça do Animal" || selectedType == "Tipo do Animal"){
 
@@ -63,7 +66,7 @@ class EntradaAnimalActivity : AppCompatActivity() {
                     Toast.makeText(this@EntradaAnimalActivity, "Erro ao cadastrar o animal", Toast.LENGTH_SHORT).show()
                 }
             }else{
-                sendDataToApi(sex, race, tattoo, type, rfid)
+                sendDataToApi(sex, race, tattoo, type, rfid, currentDateTime)
             }
         }
     }
@@ -122,7 +125,7 @@ class EntradaAnimalActivity : AppCompatActivity() {
         }
     }
 
-    private fun sendDataToApi(sex: String?, race: String, tattoo: String, type: String, rfid: String) {
+    private fun sendDataToApi(sex: String?, race: String, tattoo: String, type: String, rfid: String, currentDateTime:String) {
         val apiUrl = "https://intelicampo-api-stg.vercel.app/animal"  // Substitua pela URL correta da sua API
 
         GlobalScope.launch(Dispatchers.IO) {
@@ -140,6 +143,7 @@ class EntradaAnimalActivity : AppCompatActivity() {
                 jsonParam.put("tattoo", tattoo)
                 jsonParam.put("picketId", 30)
                 jsonParam.put("rfid", rfid)
+                jsonParam.put("birth", currentDateTime)
 
                 val outputStreamWriter = OutputStreamWriter(connection.outputStream)
                 outputStreamWriter.write(jsonParam.toString())
@@ -153,7 +157,6 @@ class EntradaAnimalActivity : AppCompatActivity() {
                     handler.post {
                         Toast.makeText(this@EntradaAnimalActivity, "Animal cadastrado com sucesso!", Toast.LENGTH_SHORT).show()
                     }
-
                     handler.postDelayed({
                         val intent = Intent(this@EntradaAnimalActivity, HomeActivity::class.java)
                         startActivity(intent)
@@ -171,5 +174,10 @@ class EntradaAnimalActivity : AppCompatActivity() {
                 e.printStackTrace()
             }
         }
+    }
+    private fun getCurrentDate(): String {
+        val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+        val date = Date()
+        return dateFormat.format(date)
     }
 }

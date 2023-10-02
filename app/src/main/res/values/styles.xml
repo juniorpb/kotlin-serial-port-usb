@@ -11,5 +11,17 @@
         <item name="android:popupBackground">#FFFFFF</item>
         <item name="android:gravity">center_vertical</item>
         <item name="android:paddingEnd">8dp</item>
+        <item name="android:dropDownHintAppearance">#3A3A3A</item>
+    </style>
+    <style name="InputWithGrayBorders">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">55dp</item>
+        <item name="android:layout_marginBottom">8dp</item>
+        <item name="android:dropDownWidth">match_parent</item>
+        <item name="android:spinnerMode">dropdown</item>
+        <item name="android:background">@drawable/rounded_white</item>
+        <item name="android:popupBackground">#FFFFFF</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:paddingEnd">8dp</item>
     </style>
 </resources>

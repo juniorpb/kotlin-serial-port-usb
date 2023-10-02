@@ -4,6 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#ffff"
+
     tools:context=".EntradaAnimalActivity">
 
     <!-- Adicione a Toolbar -->
@@ -46,7 +48,6 @@
             android:hint="Tatuagem"
             android:inputType="text"
             android:padding="12dp"
-
             android:textColor="#3A3A3A"
             android:textColorHint="#3A3A3A"
             android:textSize="16sp" />
@@ -57,7 +58,9 @@
             android:layout_width="match_parent"
             android:layout_height="55dp"
             android:layout_marginBottom="8dp"
+            android:animationCache="false"
             android:dropDownWidth="match_parent"
+            android:dropDownSelector="@drawable/baseline_keyboard_arrow_down_24"
             android:spinnerMode="dropdown" />
 
         <Spinner

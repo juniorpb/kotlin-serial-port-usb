@@ -59,7 +59,6 @@ class ReaderRFIDActivity : AppCompatActivity() {
         redirectAsync(::navgation)
     }
 
-
     fun redirectAsync(navgation: () -> Unit) {
         val mainScope = CoroutineScope(Dispatchers.Main)
 

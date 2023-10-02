@@ -1,13 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 
-
-
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#ffff"
     tools:context=".HomeActivity">
 
     <com.google.android.material.appbar.AppBarLayout
@@ -22,50 +21,53 @@
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             android:background="#2196F3"
+            app:collapseIcon="@drawable/baseline_arrow_back_ios_24"
             app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
             app:title="Home" />
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical"
-            android:padding="14dp"
-            >
-
-            <TextView
-                android:id="@+id/textView5"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:fontFamily="@font/roboto_medium"
-                android:text="Bem Vindo a sua Fazenda"
-                android:textAppearance="@style/TextAppearance.AppCompat.Display1"
-                android:textColor="#3E3D3D"
-                android:textSize="34sp"
-                android:textStyle="bold" />
-
-            <TextView
-                android:id="@+id/textView6"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:fontFamily="@font/roboto"
-                android:text="Ola, Pedro Leite"
-                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-                android:textColor="#7A7979"
-                android:textStyle="bold" />
-        </LinearLayout>
-
     </com.google.android.material.appbar.AppBarLayout>
+    <LinearLayout
+        android:id="@+id/text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="14dp"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/appBarLayout">
+
+        <TextView
+            android:id="@+id/textView5"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/roboto_medium"
+            android:text="Bem Vindo a sua Fazenda"
+            android:textColor="#3E3D3D"
+            android:textSize="34sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/textView6"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/roboto"
+            android:text=""
+            android:textColor="#7A7979"
+            android:textStyle="bold" />
+    </LinearLayout>
 
     <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        tools:context=".HomeActivity"
         android:layout_margin="10dp"
         android:padding="6dp"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/appBarLayout">
+        app:layout_constraintTop_toBottomOf="@+id/text"
+        tools:context=".HomeActivity">
 
 
         <Button
@@ -143,8 +145,8 @@
             android:layout_marginTop="144dp"
             android:layout_marginEnd="4dp"
             android:backgroundTint="#F15A5A"
-            android:text="Sincronizar"
             android:fontFamily="@font/roboto_medium"
+            android:text="Sincronizar"
             android:textColor="#FAFAFA"
             android:textSize="14sp"
             app:icon="@android:drawable/stat_notify_sync_noanim"
@@ -156,6 +158,36 @@
             app:layout_constraintTop_toTopOf="parent" />
 
 
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:padding="6dp"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/layout">
+
+
+        <Button
+            android:id="@+id/btnLogout"
+
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:backgroundTint="#3EA1FE"
+            android:drawableLeft="@drawable/baseline_arrow_back_ios_24"
+            android:fontFamily="@font/roboto_medium"
+            android:text="Sair"
+            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+            android:textColor="#FFFFFF"
+            android:textSize="14sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="parent"
+            tools:ignore="MissingConstraints"
+            tools:layout_editor_absoluteY="7dp" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 
