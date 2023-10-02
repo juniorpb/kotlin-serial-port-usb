@@ -29,7 +29,7 @@ class HomeActivity : AppCompatActivity() {
         binding.btnLogout.setOnClickListener {
             val intent = Intent(this, LoginActivity::class.java)
             startActivity(intent)
-          logout()
+            logout()
 
         }
 
@@ -41,12 +41,14 @@ class HomeActivity : AppCompatActivity() {
 
 // Ler dados em cache
         val username = sharedPreferences.getString("username", "")
-        val accessToken = sharedPreferences.getString("accessToken", "")
-        val userId = sharedPreferences.getInt("userId", -1)
-        val accountId = sharedPreferences.getInt("accountId", -1)
-        val textView = findViewById<TextView>(R.id.textView6)
+        val selectedFarmName = sharedPreferences.getString("selectedFarmName", "")
 
-        textView.text = "Ola, $username"
+        val textView = findViewById<TextView>(R.id.decription)
+        val titlelView = findViewById<TextView>(R.id.title)
+
+
+        titlelView.text = "Bem vindo a ${selectedFarmName}"
+        textView.text = "Olá, $username! aqui você faz o manejo dos seus animais "
 
         val CREATE_ANIMAL_RESPONSE = intent.getStringExtra("CREATE_ANIMAL_RESPONSE")
 
@@ -79,8 +81,6 @@ class HomeActivity : AppCompatActivity() {
     private fun logout(){
         val sharedPreferences: SharedPreferences = getSharedPreferences("UserData", Context.MODE_PRIVATE)
         val editor = sharedPreferences.edit()
-
-        // Limpar os dados em cache
         editor.clear()
         editor.apply()
 
