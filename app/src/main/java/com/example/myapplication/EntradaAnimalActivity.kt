@@ -31,10 +31,17 @@ class EntradaAnimalActivity : AppCompatActivity() {
 
         binding.btnLeituraRFID.setOnClickListener {
             val tatuagemAnimal = binding.textTatuagem.text.toString()
+            val selectRaceAnimal = binding.selectRaceAnimal.text.toString()
+            val selectSexAnimal = binding.selectSexAnimal.text.toString()
+
+
 
             print(tatuagemAnimal)
             val intent = Intent(this, ReaderRFIDActivity::class.java)
             intent.putExtra("tatuagemAnimal", tatuagemAnimal)
+            intent.putExtra("selectRaceAnimal", selectRaceAnimal)
+            intent.putExtra("selectSexAnimal", selectSexAnimal)
+
             startActivity(intent)
         }
     }
