@@ -1,41 +1,183 @@
 package com.example.myapplication
 
 import android.content.Intent
+import android.os.Handler
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.os.Looper
 import android.widget.ArrayAdapter
-import com.example.myapplication.databinding.ActivityEntradaAnimalBinding
-import com.example.myapplication.databinding.ActivityHomeBinding
+import java.util.UUID
+import android.widget.AdapterView
+import android.widget.Button
+import android.widget.EditText
+import android.widget.Spinner
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import org.json.JSONObject
+import java.io.OutputStreamWriter
+import java.net.HttpURLConnection
+import java.net.URL
+import androidx.appcompat.widget.Toolbar
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 class EntradaAnimalActivity : AppCompatActivity() {
 
-    private lateinit var binding: ActivityEntradaAnimalBinding
+    private lateinit var selectRaceAnimalSpinner: Spinner
+    private lateinit var selectSexAnimalSpinner: Spinner
+    private lateinit var selectTypeAnimalSpinner: Spinner
+    private lateinit var tattooEditText: EditText
+    private lateinit var sendButton: Button
+    private lateinit var rfidEditText: String
+
+    private var selectedRace: String = ""
+    private var selectedSex: String = ""
+    private var selectedType: String = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_entrada_animal)
 
-        binding = ActivityEntradaAnimalBinding.inflate(layoutInflater)
+        selectRaceAnimalSpinner = findViewById(R.id.select_race_animal)
+        selectSexAnimalSpinner = findViewById(R.id.select_sex_animal)
+        selectTypeAnimalSpinner = findViewById(R.id.select_type_animal)
+        tattooEditText = findViewById(R.id.textTatuagem)
+        sendButton = findViewById(R.id.btnLeituraRFID)
+        rfidEditText = UUID.randomUUID().toString()
 
-        setContentView(binding.root)
+        setupSpinners()
 
+        sendButton.setOnClickListener {
+            val sex = selectedSex
+            val race = selectedRace
+            val type = selectedType
+            val tattoo = tattooEditText.text.toString()
+            val rfid = rfidEditText.toString()
+            val currentDateTime = getCurrentDate()
 
-        val selectRaceAnimalList = arrayOf("Nelore", "Angus", "Brahman", "Brangus", "Senepol")
-        val selectRaceAnimalAdapter = ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line, selectRaceAnimalList)
-        binding.selectRaceAnimal.setAdapter(selectRaceAnimalAdapter)
+            if(selectedSex == "Sexo do Animal" || selectedRace == "Raça do Animal" || selectedType == "Tipo do Animal"){
 
-
-        val selectSexAnimalList = arrayOf("Macho", "Fêmea")
-        val selectSexAnimalAdapter = ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line, selectSexAnimalList)
-        binding.selectSexAnimal.setAdapter(selectSexAnimalAdapter)
-
-
-        binding.btnLeituraRFID.setOnClickListener {
-            val tatuagemAnimal = binding.textTatuagem.text.toString()
-
-            print(tatuagemAnimal)
-            val intent = Intent(this, ReaderRFIDActivity::class.java)
-            intent.putExtra("tatuagemAnimal", tatuagemAnimal)
-            startActivity(intent)
+                val handler = Handler(Looper.getMainLooper())
+                handler.post {
+                    Toast.makeText(this@EntradaAnimalActivity, "Erro ao cadastrar o animal", Toast.LENGTH_SHORT).show()
+                }
+            }else{
+                sendDataToApi(sex, race, tattoo, type, rfid, currentDateTime)
+            }
         }
+    }
+
+    private fun setupSpinners() {
+        val selectRaceAnimalList = arrayOf("Raça do Animal","Nelore", "Angus", "Brahman", "Brangus", "Senepol")
+        val selectSexAnimalList = arrayOf("Sexo do Animal","Macho", "Femea")
+        val selectTypeAnimalList = arrayOf("Tipo do Animal","BEZERRO", "GARROTE", "NOVILHA", "ADULTO")
+
+        val selectRaceAnimalAdapter = ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line, selectRaceAnimalList)
+        val selectSexAnimalAdapter = ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line, selectSexAnimalList)
+        val selectTypeAnimalAdapter = ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line, selectTypeAnimalList)
+
+        selectRaceAnimalSpinner.adapter = selectRaceAnimalAdapter
+        selectSexAnimalSpinner.adapter = selectSexAnimalAdapter
+        selectTypeAnimalSpinner.adapter = selectTypeAnimalAdapter
+
+        selectRaceAnimalSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parentView: AdapterView<*>?, selectedItemView: android.view.View?, position: Int, id: Long) {
+                selectedRace = selectRaceAnimalList[position]
+
+            }
+
+            override fun onNothingSelected(parentView: AdapterView<*>?) {
+                // Não faz nada
+            }
+        }
+
+        selectSexAnimalSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parentView: AdapterView<*>?, selectedItemView: android.view.View?, position: Int, id: Long) {
+                selectedSex = selectSexAnimalList[position]
+
+                if(selectSexAnimalList[position]==="Macho"){
+                    selectedSex = "MALE"
+                }
+                if(selectSexAnimalList[position]==="Femea"){
+                    selectedSex = "FEMALE"
+                }
+
+            }
+
+            override fun onNothingSelected(parentView: AdapterView<*>?) {
+                // Não faz nada
+            }
+        }
+
+        selectTypeAnimalSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parentView: AdapterView<*>?, selectedItemView: android.view.View?, position: Int, id: Long) {
+                selectedType = selectTypeAnimalList[position]
+
+            }
+
+            override fun onNothingSelected(parentView: AdapterView<*>?) {
+                // Não faz nada
+            }
+        }
+    }
+
+    private fun sendDataToApi(sex: String?, race: String, tattoo: String, type: String, rfid: String, currentDateTime:String) {
+        val apiUrl = "https://intelicampo-api-stg.vercel.app/animal"  // Substitua pela URL correta da sua API
+
+        GlobalScope.launch(Dispatchers.IO) {
+            val url = URL(apiUrl)
+            val connection = url.openConnection() as HttpURLConnection
+            connection.requestMethod = "POST"
+            connection.setRequestProperty("Content-Type", "application/json")
+            connection.doOutput = true
+
+            try {
+                val jsonParam = JSONObject()
+                jsonParam.put("animalType", type)
+                jsonParam.put("race", race)
+                jsonParam.put("sex", sex)
+                jsonParam.put("tattoo", tattoo)
+                jsonParam.put("picketId", 30)
+                jsonParam.put("rfid", rfid)
+                jsonParam.put("birth", currentDateTime)
+
+                val outputStreamWriter = OutputStreamWriter(connection.outputStream)
+                outputStreamWriter.write(jsonParam.toString())
+                outputStreamWriter.flush()
+                outputStreamWriter.close()
+
+                val responseCode = connection.responseCode
+                if (responseCode == 201) {
+
+                    val handler = Handler(Looper.getMainLooper())
+                    handler.post {
+                        Toast.makeText(this@EntradaAnimalActivity, "Animal cadastrado com sucesso!", Toast.LENGTH_SHORT).show()
+                    }
+                    handler.postDelayed({
+                        val intent = Intent(this@EntradaAnimalActivity, HomeActivity::class.java)
+                        startActivity(intent)
+                        finish()
+                    }, 100)
+                } else {
+
+                    val handler = Handler(Looper.getMainLooper())
+                    handler.post {
+                        Toast.makeText(this@EntradaAnimalActivity, "Erro ao cadastrar o animal", Toast.LENGTH_SHORT).show()
+                    }
+                }
+                connection.disconnect()
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+    }
+    private fun getCurrentDate(): String {
+        val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+        val date = Date()
+        return dateFormat.format(date)
     }
 }

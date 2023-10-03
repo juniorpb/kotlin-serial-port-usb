@@ -17,6 +17,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
+        android:layout_marginBottom="12dp"
         android:layout_marginTop="100dp"
         android:contentDescription="@string/logo_description"
         android:foregroundGravity="center"
@@ -24,36 +25,40 @@
 
     <EditText
         android:id="@+id/etUsername"
+        style="@style/InputWithGrayBorders"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="55dp"
         android:layout_below="@id/imageViewLogo"
-        android:layout_marginTop="24dp"
-        android:background="#fff"
+        android:layout_marginBottom="8dp"
         android:hint="Digite seu CPF"
+        android:inputType="text"
         android:padding="12dp"
-        android:textAppearance="@style/TextAppearance.AppCompat.Body2"
-        android:textColor="#000" />
+        android:textColor="#3A3A3A"
+        android:textColorHint="#A3A3A3"
+        android:textSize="16sp" />
 
     <!-- Password EditText -->
-    <EditText
-        android:id="@+id/etPassword"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/etUsername"
-        android:layout_marginTop="16dp"
-        android:background="#fff"
-        android:hint="Digite sua senha"
-        android:inputType="textPassword"
-        android:padding="12dp"
-
-        android:textAppearance="@style/TextAppearance.AppCompat.Body2"
-        android:textColor="#000" />
 
     <!-- Login Button -->
+
+    <EditText
+        android:id="@+id/etPassword"
+        style="@style/InputWithGrayBorders"
+        android:layout_width="match_parent"
+        android:layout_height="55dp"
+        android:layout_below="@id/imageViewLogo"
+        android:layout_marginBottom="8dp"
+        android:hint="Digite sua Senha"
+        android:inputType="textPassword"
+        android:padding="12dp"
+        android:textColor="#3A3A3A"
+        android:textColorHint="#A3A3A3"
+        android:textSize="16sp" />
+
     <Button
         android:id="@+id/btnLogin"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="65dp"
         android:layout_below="@id/etPassword"
         android:layout_marginTop="24dp"
         android:backgroundTint="#3EA1FE"
