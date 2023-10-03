@@ -22,9 +22,14 @@ import java.io.OutputStreamWriter
 import java.net.HttpURLConnection
 import java.net.URL
 import androidx.appcompat.widget.Toolbar
+import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+import android.content.Context
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
+import android.os.Build
 
 class EntradaAnimalActivity : AppCompatActivity() {
 
@@ -33,7 +38,7 @@ class EntradaAnimalActivity : AppCompatActivity() {
     private lateinit var selectTypeAnimalSpinner: Spinner
     private lateinit var tattooEditText: EditText
     private lateinit var sendButton: Button
-
+    private lateinit var cacheManager: CacheManager
 
 
     private var selectedRace: String = ""
@@ -44,6 +49,7 @@ class EntradaAnimalActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_entrada_animal)
 
+        cacheManager = CacheManager(this)
         selectRaceAnimalSpinner = findViewById(R.id.select_race_animal)
         selectSexAnimalSpinner = findViewById(R.id.select_sex_animal)
         selectTypeAnimalSpinner = findViewById(R.id.select_type_animal)
@@ -63,17 +69,31 @@ class EntradaAnimalActivity : AppCompatActivity() {
             val tattoo = tattooEditText.text.toString()
             val currentDateTime = getCurrentDate()
 
-            if(selectedSex == "Sexo do Animal" || selectedRace == "Raça do Animal" || selectedType == "Tipo do Animal"){
-
+            if (selectedSex == "Sexo do Animal" || selectedRace == "Raça do Animal" || selectedType == "Tipo do Animal") {
                 val handler = Handler(Looper.getMainLooper())
                 handler.post {
                     Toast.makeText(this@EntradaAnimalActivity, "Erro ao cadastrar o animal", Toast.LENGTH_SHORT).show()
                 }
-            }else{
-                sendDataToApi(sex, race, tattoo, type, rfid, currentDateTime)
+            } else {
+                if (cacheManager.isNetworkConnected()) {
+                    sendDataToApi(sex, race, tattoo, type, rfid, currentDateTime)
+                } else {
+                    cacheDataLocally(sex, race, tattoo, type, rfid, currentDateTime)
+                    val handler = Handler(Looper.getMainLooper())
+                    handler.post {
+                        val intent = Intent(this@EntradaAnimalActivity, HomeActivity::class.java)
+                        startActivity(intent)
+                        finish()
+                        Toast.makeText(this@EntradaAnimalActivity, "Dados armazenados em cache.", Toast.LENGTH_SHORT).show()
+
+                    }
+                }
             }
         }
     }
+
+
+
 
     private fun setupSpinners() {
         val selectRaceAnimalList = arrayOf("Raça do Animal","Nelore", "Angus", "Brahman", "Brangus", "Senepol")
@@ -91,11 +111,9 @@ class EntradaAnimalActivity : AppCompatActivity() {
         selectRaceAnimalSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parentView: AdapterView<*>?, selectedItemView: android.view.View?, position: Int, id: Long) {
                 selectedRace = selectRaceAnimalList[position]
-
             }
 
             override fun onNothingSelected(parentView: AdapterView<*>?) {
-                // Não faz nada
             }
         }
 
@@ -109,22 +127,16 @@ class EntradaAnimalActivity : AppCompatActivity() {
                 if(selectSexAnimalList[position]==="Femea"){
                     selectedSex = "FEMALE"
                 }
-
             }
-
             override fun onNothingSelected(parentView: AdapterView<*>?) {
-                // Não faz nada
             }
         }
 
         selectTypeAnimalSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parentView: AdapterView<*>?, selectedItemView: android.view.View?, position: Int, id: Long) {
                 selectedType = selectTypeAnimalList[position]
-
             }
-
             override fun onNothingSelected(parentView: AdapterView<*>?) {
-                // Não faz nada
             }
         }
     }
@@ -184,4 +196,28 @@ class EntradaAnimalActivity : AppCompatActivity() {
         val date = Date()
         return dateFormat.format(date)
     }
+    private fun cacheDataLocally(
+        sex: String?,
+        race: String,
+        tattoo: String,
+        type: String,
+        rfid: String,
+        currentDateTime: String
+    ) {
+        try {
+            val jsonParam = JSONObject()
+            jsonParam.put("animalType", type)
+            jsonParam.put("race", race)
+            jsonParam.put("sex", sex)
+            jsonParam.put("tattoo", tattoo)
+            jsonParam.put("picketId", 30)
+            jsonParam.put("rfid", rfid)
+            jsonParam.put("birth", currentDateTime)
+
+            cacheManager.cacheDataLocally(jsonParam.toString())
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
 }
+
