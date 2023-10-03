@@ -12,19 +12,31 @@ import android.widget.TextView
 import android.widget.Toast
 import com.example.myapplication.databinding.ActivityHomeBinding
 import com.google.android.material.snackbar.Snackbar
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 
 class HomeActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityHomeBinding
+    private lateinit var appDb: AppDatabase
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         binding = ActivityHomeBinding.inflate(layoutInflater)
 
-
-
         setContentView(binding.root)
+
+        appDb = AppDatabase.getDatabase(this)
+
+//        GlobalScope.launch {
+//            val animalsToSync = appDb.animalDao().getAllAnimals()
+//            if (animalsToSync.isNotEmpty()) {
+//                binding.btnSincronizar.backgroundTintList = getColorStateList(R.color.red)
+//            } else {
+//                binding.btnSincronizar.backgroundTintList = getColorStateList(R.color.blue)
+//            }
+//        }
 
         binding.btnLogout.setOnClickListener {
             val intent = Intent(this, LoginActivity::class.java)
@@ -39,7 +51,7 @@ class HomeActivity : AppCompatActivity() {
         }
         val sharedPreferences = getSharedPreferences("UserData", Context.MODE_PRIVATE)
 
-// Ler dados em cache
+        // Ler dados em cache
         val username = sharedPreferences.getString("username", "")
         val selectedFarmName = sharedPreferences.getString("selectedFarmName", "")
 
