@@ -5,6 +5,8 @@ import android.content.Intent
 import android.content.SharedPreferences
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
@@ -12,6 +14,13 @@ import android.widget.TextView
 import android.widget.Toast
 import com.example.myapplication.databinding.ActivityHomeBinding
 import com.google.android.material.snackbar.Snackbar
+import java.io.File
+import androidx.core.content.ContextCompat
+import androidx.lifecycle.Observer
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import org.json.JSONObject
 
 class HomeActivity : AppCompatActivity() {
 
@@ -23,74 +32,46 @@ class HomeActivity : AppCompatActivity() {
         binding = ActivityHomeBinding.inflate(layoutInflater)
 
 
-
         setContentView(binding.root)
+
+        binding.btnSincronizar.setOnClickListener {
+
+        }
 
         binding.btnLogout.setOnClickListener {
             val intent = Intent(this, LoginActivity::class.java)
             startActivity(intent)
             logout()
-
         }
 
         binding.btnEntradaAnimal.setOnClickListener {
             val intent = Intent(this, ReaderRFIDActivity::class.java)
-            intent.putExtra("tela", "enterAnimal" )
+            intent.putExtra("tela", "enterAnimal")
             startActivity(intent)
         }
 
         binding.btnSaidaAnimal.setOnClickListener {
             val intent = Intent(this, ReaderRFIDActivity::class.java)
-            intent.putExtra("tela1", "removeAnimal" )
+            intent.putExtra("tela1", "removeAnimal")
             startActivity(intent)
         }
 
-
         val sharedPreferences = getSharedPreferences("UserData", Context.MODE_PRIVATE)
-
         val username = sharedPreferences.getString("username", "")
         val selectedFarmName = sharedPreferences.getString("selectedFarmName", "")
 
         val textView = findViewById<TextView>(R.id.decription)
         val titlelView = findViewById<TextView>(R.id.title)
 
+        titlelView.text = "Bem-vindo a $selectedFarmName"
 
-        titlelView.text = "Bem vindo a ${selectedFarmName}"
-        textView.text = "Olá, $username! aqui você faz o manejo dos seus animais "
-
-        val CREATE_ANIMAL_RESPONSE = intent.getStringExtra("CREATE_ANIMAL_RESPONSE")
-
-        if (CREATE_ANIMAL_RESPONSE == "SUCCESS") {
-            showToastSuccess()
-        } else if(CREATE_ANIMAL_RESPONSE == "ERROR") {
-            showToastError()
-        }
-
+        textView.text = "Olá, $username! Aqui você faz o manejo dos seus animais"
 
     }
-
-
-    private fun showToastSuccess() {
-        val mensagem = "Sucesso ao criar animal!"
-
-        val snackbar = Snackbar.make(binding.root, mensagem, Snackbar.LENGTH_LONG)
-        snackbar.setBackgroundTint(resources.getColor(android.R.color.holo_green_dark))
-        snackbar.show()
-    }
-
-    private fun showToastError() {
-        val mensagem = "Erro ao criar animal"
-
-        val snackbar = Snackbar.make(binding.root, mensagem, Snackbar.LENGTH_LONG)
-        snackbar.setBackgroundTint(resources.getColor(android.R.color.holo_red_dark))
-        snackbar.show()
-    }
-
-    private fun logout(){
+    private fun logout() {
         val sharedPreferences: SharedPreferences = getSharedPreferences("UserData", Context.MODE_PRIVATE)
         val editor = sharedPreferences.edit()
         editor.clear()
         editor.apply()
-
     }
 }
