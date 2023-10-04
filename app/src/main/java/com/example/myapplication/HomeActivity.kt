@@ -24,19 +24,9 @@ class HomeActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         binding = ActivityHomeBinding.inflate(layoutInflater)
-
         setContentView(binding.root)
 
         appDb = AppDatabase.getDatabase(this)
-
-//        GlobalScope.launch {
-//            val animalsToSync = appDb.animalDao().getAllAnimals()
-//            if (animalsToSync.isNotEmpty()) {
-//                binding.btnSincronizar.backgroundTintList = getColorStateList(R.color.red)
-//            } else {
-//                binding.btnSincronizar.backgroundTintList = getColorStateList(R.color.blue)
-//            }
-//        }
 
         binding.btnLogout.setOnClickListener {
             val intent = Intent(this, LoginActivity::class.java)
@@ -62,11 +52,20 @@ class HomeActivity : AppCompatActivity() {
         titlelView.text = "Bem vindo a ${selectedFarmName}"
         textView.text = "Olá, $username! aqui você faz o manejo dos seus animais "
 
+        GlobalScope.launch {
+            val animalsToSync = appDb.animalDao().getAllAnimals()
+            if (animalsToSync.isNotEmpty()) {
+                binding.btnSincronizar.backgroundTintList = getColorStateList(R.color.red)
+            } else {
+                binding.btnSincronizar.backgroundTintList = getColorStateList(R.color.blue)
+            }
+        }
+
         val CREATE_ANIMAL_RESPONSE = intent.getStringExtra("CREATE_ANIMAL_RESPONSE")
 
         if (CREATE_ANIMAL_RESPONSE == "SUCCESS") {
             showToastSuccess()
-        } else if(CREATE_ANIMAL_RESPONSE == "ERROR") {
+        } else if (CREATE_ANIMAL_RESPONSE == "ERROR") {
             showToastError()
         }
 

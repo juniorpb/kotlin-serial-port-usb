@@ -3,6 +3,7 @@ package com.example.myapplication
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import androidx.room.Room
 import com.example.myapplication.databinding.ActivityReaderRfidBinding
 import com.example.myapplication.dto.AnimalEntity
 import kotlinx.coroutines.CoroutineScope
@@ -30,6 +31,20 @@ class ReaderRFIDActivity : AppCompatActivity() {
 
         setContentView(binding.root)
         appDb = AppDatabase.getDatabase(this)
+
+        val tatuagemAnimal = intent.getStringExtra("tatuagemAnimal")
+        val selectRaceAnimal = intent.getStringExtra("selectRaceAnimal")
+        val selectSexAnimal = intent.getStringExtra("selectSexAnimal")
+
+        print(tatuagemAnimal)
+
+        ANIMAL_CREATE = AnimalEntity(
+            rfid = UUID.randomUUID().toString(),
+            tattoo = tatuagemAnimal,
+            race = selectRaceAnimal,
+            sex = selectSexAnimal
+        )
+
 
         val sex = intent.getStringExtra("sex")
         val tattoo = intent.getStringExtra("tattoo")
