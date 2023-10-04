@@ -10,5 +10,7 @@ data class AnimalEntity(
     val rfid: String? = null,
     val tattoo: String?,
     val race: String?,
-    val sex: String?
+    val sex: String?,
+    val type: String? = null,
+    val currentDateTime: String? = null
 )
