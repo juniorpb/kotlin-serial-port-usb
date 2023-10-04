@@ -12,16 +12,6 @@ import android.widget.AdapterView
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Spinner
-import android.widget.TextView
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import org.json.JSONObject
-import java.io.OutputStreamWriter
-import java.net.HttpURLConnection
-import java.net.URL
-import androidx.appcompat.widget.Toolbar
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -70,9 +60,27 @@ class EntradaAnimalActivity : AppCompatActivity() {
                     Toast.makeText(this@EntradaAnimalActivity, "Erro ao cadastrar o animal", Toast.LENGTH_SHORT).show()
                 }
             }else{
-                sendDataToApi(sex, race, tattoo, type, rfid, currentDateTime)
+                goToReanderRfidAndCreateAnimal(sex, race, tattoo, type, currentDateTime)
             }
         }
+    }
+
+    private fun goToReanderRfidAndCreateAnimal(
+        sex: String?,
+        race: String,
+        tattoo: String,
+        type: String,
+        currentDateTime: String
+    ) {
+
+        val intent = Intent(this, ReaderRFIDActivity::class.java)
+        intent.putExtra("sex", sex)
+        intent.putExtra("race", race)
+        intent.putExtra("tattoo", tattoo)
+        intent.putExtra("type", type)
+        intent.putExtra("currentDateTime", currentDateTime)
+
+        startActivity(intent)
     }
 
     private fun setupSpinners() {
@@ -129,56 +137,6 @@ class EntradaAnimalActivity : AppCompatActivity() {
         }
     }
 
-    private fun sendDataToApi(sex: String?, race: String, tattoo: String, type: String, rfid: String, currentDateTime:String) {
-        val apiUrl = "https://intelicampo-api-stg.vercel.app/animal"  // Substitua pela URL correta da sua API
-
-        GlobalScope.launch(Dispatchers.IO) {
-            val url = URL(apiUrl)
-            val connection = url.openConnection() as HttpURLConnection
-            connection.requestMethod = "POST"
-            connection.setRequestProperty("Content-Type", "application/json")
-            connection.doOutput = true
-
-            try {
-                val jsonParam = JSONObject()
-                jsonParam.put("animalType", type)
-                jsonParam.put("race", race)
-                jsonParam.put("sex", sex)
-                jsonParam.put("tattoo", tattoo)
-                jsonParam.put("picketId", 30)
-                jsonParam.put("rfid", rfid)
-                jsonParam.put("birth", currentDateTime)
-
-                val outputStreamWriter = OutputStreamWriter(connection.outputStream)
-                outputStreamWriter.write(jsonParam.toString())
-                outputStreamWriter.flush()
-                outputStreamWriter.close()
-
-                val responseCode = connection.responseCode
-                if (responseCode == 201) {
-
-                    val handler = Handler(Looper.getMainLooper())
-                    handler.post {
-                        Toast.makeText(this@EntradaAnimalActivity, "Animal cadastrado com sucesso!", Toast.LENGTH_SHORT).show()
-                    }
-                    handler.postDelayed({
-                        val intent = Intent(this@EntradaAnimalActivity, HomeActivity::class.java)
-                        startActivity(intent)
-                        finish()
-                    }, 100)
-                } else {
-
-                    val handler = Handler(Looper.getMainLooper())
-                    handler.post {
-                        Toast.makeText(this@EntradaAnimalActivity, "Erro ao cadastrar o animal", Toast.LENGTH_SHORT).show()
-                    }
-                }
-                connection.disconnect()
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
-        }
-    }
     private fun getCurrentDate(): String {
         val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
         val date = Date()

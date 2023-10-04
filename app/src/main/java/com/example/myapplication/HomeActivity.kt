@@ -14,31 +14,21 @@ import android.widget.TextView
 import android.widget.Toast
 import com.example.myapplication.databinding.ActivityHomeBinding
 import com.google.android.material.snackbar.Snackbar
-import java.io.File
-import androidx.core.content.ContextCompat
-import androidx.lifecycle.Observer
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
-import org.json.JSONObject
 
 class HomeActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityHomeBinding
+    private lateinit var appDb: AppDatabase
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         binding = ActivityHomeBinding.inflate(layoutInflater)
-
-
         setContentView(binding.root)
 
-        binding.btnAnimal.setOnClickListener {
-            val intent = Intent(this, ReaderRFIDActivity::class.java)
-            intent.putExtra("tela2", "RfidValid")
-            startActivity(intent)
-        }
+        appDb = AppDatabase.getDatabase(this)
 
         binding.btnLogout.setOnClickListener {
             val intent = Intent(this, LoginActivity::class.java)
@@ -52,13 +42,7 @@ class HomeActivity : AppCompatActivity() {
             startActivity(intent)
         }
 
-        binding.btnSaidaAnimal.setOnClickListener {
-            val intent = Intent(this, ReaderRFIDActivity::class.java)
-            intent.putExtra("tela3", "remove")
-            startActivity(intent)
-        }
-
-        val sharedPreferences = getSharedPreferences("UserData", Context.MODE_PRIVATE)
+        // Ler dados em cache
         val username = sharedPreferences.getString("username", "")
         val selectedFarmName = sharedPreferences.getString("selectedFarmName", "")
 
@@ -67,7 +51,26 @@ class HomeActivity : AppCompatActivity() {
 
         titlelView.text = "Bem-vindo a $selectedFarmName"
 
-        textView.text = "Olá, $username! Aqui você faz o manejo dos seus animais"
+        titlelView.text = "Bem vindo a ${selectedFarmName}"
+        textView.text = "Olá, $username! aqui você faz o manejo dos seus animais "
+
+        GlobalScope.launch {
+            val animalsToSync = appDb.animalDao().getAllAnimals()
+            if (animalsToSync.isNotEmpty()) {
+                binding.btnSincronizar.backgroundTintList = getColorStateList(R.color.red)
+            } else {
+                binding.btnSincronizar.backgroundTintList = getColorStateList(R.color.blue)
+            }
+        }
+
+        val CREATE_ANIMAL_RESPONSE = intent.getStringExtra("CREATE_ANIMAL_RESPONSE")
+
+        if (CREATE_ANIMAL_RESPONSE == "SUCCESS") {
+            showToastSuccess()
+        } else if (CREATE_ANIMAL_RESPONSE == "ERROR") {
+            showToastError()
+        }
+
 
     }
     private fun logout() {
