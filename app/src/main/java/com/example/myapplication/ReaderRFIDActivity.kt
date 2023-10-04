@@ -42,7 +42,8 @@ class ReaderRFIDActivity : AppCompatActivity() {
         progressBar.visibility = View.VISIBLE
 
         val entradaAnimal = intent.getStringExtra("tela").toString()
-        val removeAnimal = intent.getStringExtra("tela2").toString()
+        val valid = intent.getStringExtra("tela2").toString()
+        val removeAnimal = intent.getStringExtra("tela3").toString()
 
         if(entradaAnimal == "enterAnimal"){
             handler.postDelayed({
@@ -51,7 +52,10 @@ class ReaderRFIDActivity : AppCompatActivity() {
                 startActivity(intent)
                 finish()
             }, 3000)
-        }else
+        }
+
+        if (removeAnimal == "remove"){
+
             handler.postDelayed({
                 val intent = Intent(this, RemoveAnimalActivity::class.java)
                 intent.putExtra("RFID", rfid )
@@ -59,7 +63,19 @@ class ReaderRFIDActivity : AppCompatActivity() {
                 finish()
             }, 3000)
 
+        }
 
+
+        if (valid == "RfidValid"){
+
+            handler.postDelayed({
+                val intent = Intent(this, ValidRfidActivity::class.java)
+                intent.putExtra("RFID", rfid )
+                startActivity(intent)
+                finish()
+            }, 3000)
+
+        }
 
 
 

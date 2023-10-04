@@ -34,8 +34,10 @@ class HomeActivity : AppCompatActivity() {
 
         setContentView(binding.root)
 
-        binding.btnSincronizar.setOnClickListener {
-
+        binding.btnAnimal.setOnClickListener {
+            val intent = Intent(this, ReaderRFIDActivity::class.java)
+            intent.putExtra("tela2", "RfidValid")
+            startActivity(intent)
         }
 
         binding.btnLogout.setOnClickListener {
@@ -52,7 +54,7 @@ class HomeActivity : AppCompatActivity() {
 
         binding.btnSaidaAnimal.setOnClickListener {
             val intent = Intent(this, ReaderRFIDActivity::class.java)
-            intent.putExtra("tela1", "removeAnimal")
+            intent.putExtra("tela3", "remove")
             startActivity(intent)
         }
 
