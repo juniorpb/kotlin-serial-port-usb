@@ -3,7 +3,6 @@ package com.example.myapplication
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import androidx.room.Room
 import com.example.myapplication.databinding.ActivityReaderRfidBinding
 import com.example.myapplication.dto.AnimalEntity
 import kotlinx.coroutines.CoroutineScope
@@ -27,12 +26,7 @@ class ReaderRFIDActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_reader_rfid)
-        val progressBar = findViewById<ProgressBar>(R.id.progressBar)
-        rfidEditText = UUID.randomUUID().toString()
-        val rfid = rfidEditText
-        val handler = Handler(Looper.getMainLooper())
-        progressBar.visibility = View.VISIBLE
+        binding = ActivityReaderRfidBinding.inflate(layoutInflater)
 
         setContentView(binding.root)
         appDb = AppDatabase.getDatabase(this)
@@ -74,7 +68,8 @@ class ReaderRFIDActivity : AppCompatActivity() {
             startActivity(intent)
         }
 
-        if (removeAnimal == "remove"){
+        redirectAsync(::navgation)
+    }
 
 
     fun redirectAsync(navgation: () -> Unit) {
@@ -86,24 +81,6 @@ class ReaderRFIDActivity : AppCompatActivity() {
                 navgation()
             }
         }
-
-
-        if (valid == "RfidValid"){
-
-            handler.postDelayed({
-                val intent = Intent(this, ValidRfidActivity::class.java)
-                intent.putExtra("RFID", rfid )
-                startActivity(intent)
-                finish()
-            }, 3000)
-
-        }
-
-
-
-
-    }
-
     }
 
     private fun sendDataToApi(animalEntity: AnimalEntity) {

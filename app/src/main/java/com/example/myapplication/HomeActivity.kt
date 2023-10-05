@@ -5,8 +5,6 @@ import android.content.Intent
 import android.content.SharedPreferences
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
@@ -23,6 +21,7 @@ class HomeActivity : AppCompatActivity() {
     private lateinit var appDb: AppDatabase
 
     override fun onCreate(savedInstanceState: Bundle?) {
+
         super.onCreate(savedInstanceState)
 
         binding = ActivityHomeBinding.inflate(layoutInflater)
@@ -37,29 +36,29 @@ class HomeActivity : AppCompatActivity() {
         }
 
         binding.btnEntradaAnimal.setOnClickListener {
-            val intent = Intent(this, ReaderRFIDActivity::class.java)
-            intent.putExtra("tela", "enterAnimal")
+            val intent = Intent(this, EntradaAnimalActivity::class.java)
             startActivity(intent)
         }
 
-        // Ler dados em cache
+        val sharedPreferences = getSharedPreferences("UserData", Context.MODE_PRIVATE)
+
         val username = sharedPreferences.getString("username", "")
         val selectedFarmName = sharedPreferences.getString("selectedFarmName", "")
 
         val textView = findViewById<TextView>(R.id.decription)
         val titlelView = findViewById<TextView>(R.id.title)
 
-        titlelView.text = "Bem-vindo a $selectedFarmName"
 
         titlelView.text = "Bem vindo a ${selectedFarmName}"
         textView.text = "Olá, $username! aqui você faz o manejo dos seus animais "
+
 
         GlobalScope.launch {
             val animalsToSync = appDb.animalDao().getAllAnimals()
             if (animalsToSync.isNotEmpty()) {
                 binding.btnSincronizar.backgroundTintList = getColorStateList(R.color.red)
             } else {
-                binding.btnSincronizar.backgroundTintList = getColorStateList(R.color.blue)
+                binding.btnSincronizar.backgroundTintList = getColorStateList(R.color.disabled)
             }
         }
 
@@ -70,13 +69,26 @@ class HomeActivity : AppCompatActivity() {
         } else if (CREATE_ANIMAL_RESPONSE == "ERROR") {
             showToastError()
         }
-
-
     }
-    private fun logout() {
+    private fun showToastSuccess() {
+        val mensagem = "Sucesso ao criar animal!"
+        val snackbar = Snackbar.make(binding.root, mensagem, Snackbar.LENGTH_LONG)
+        snackbar.setBackgroundTint(resources.getColor(android.R.color.holo_green_dark))
+        snackbar.show()
+    }
+
+    private fun showToastError() {
+        val mensagem = "Erro ao criar animal"
+        val snackbar = Snackbar.make(binding.root, mensagem, Snackbar.LENGTH_LONG)
+        snackbar.setBackgroundTint(resources.getColor(android.R.color.holo_red_dark))
+        snackbar.show()
+    }
+
+    private fun logout(){
         val sharedPreferences: SharedPreferences = getSharedPreferences("UserData", Context.MODE_PRIVATE)
         val editor = sharedPreferences.edit()
         editor.clear()
         editor.apply()
     }
 }
+

@@ -39,10 +39,7 @@ class EntradaAnimalActivity : AppCompatActivity() {
         selectTypeAnimalSpinner = findViewById(R.id.select_type_animal)
         tattooEditText = findViewById(R.id.textTatuagem)
         sendButton = findViewById(R.id.btnLeituraRFID)
-        val rfid = intent.getStringExtra("RFID").toString()
 
-        val textView = findViewById<TextView>(R.id.rfidText)
-        textView.text = "RFID: ${rfid}"
 
         setupSpinners()
 
