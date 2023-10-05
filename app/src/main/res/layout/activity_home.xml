@@ -112,11 +112,11 @@
             app:iconSize="64dp"
             app:iconTint="#FFFFFF"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/btnAnimal"
+            app:layout_constraintStart_toEndOf="@+id/btnValidRFID"
             app:layout_constraintTop_toTopOf="parent" />
 
         <Button
-            android:id="@+id/btnAnimal"
+            android:id="@+id/btnValidRFID"
             style="@style/Widget.Material3.ExtendedFloatingActionButton.Tertiary"
             android:layout_width="0dp"
             android:layout_height="125dp"

@@ -40,6 +40,18 @@ class HomeActivity : AppCompatActivity() {
             startActivity(intent)
         }
 
+        binding.btnSaidaAnimal.setOnClickListener {
+            val intent = Intent(this, ReaderValidRFIDActivity2::class.java)
+            intent.putExtra("RemoveAnimal", "PageRemove" )
+            startActivity(intent)
+        }
+
+        binding.btnValidRFID.setOnClickListener {
+            val intent = Intent(this, ReaderValidRFIDActivity2::class.java)
+            intent.putExtra("ValidRFID", "ValidRFID" )
+            startActivity(intent)
+        }
+
         val sharedPreferences = getSharedPreferences("UserData", Context.MODE_PRIVATE)
 
         val username = sharedPreferences.getString("username", "")
