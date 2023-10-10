@@ -36,9 +36,5 @@ class ReaderValidRFIDActivity2 : AppCompatActivity() {
             }, 3000)
         }
 
-
-
-
-
     }
     }
