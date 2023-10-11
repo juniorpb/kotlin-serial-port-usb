@@ -3,7 +3,6 @@ package com.example.myapplication
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import androidx.room.Room
 import com.example.myapplication.databinding.ActivityReaderRfidBinding
 import com.example.myapplication.dto.AnimalEntity
 import kotlinx.coroutines.CoroutineScope
@@ -14,6 +13,9 @@ import org.json.JSONObject
 import java.io.OutputStreamWriter
 import java.net.HttpURLConnection
 import java.net.URL
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 import java.util.UUID
 
 class ReaderRFIDActivity : AppCompatActivity() {
@@ -24,7 +26,7 @@ class ReaderRFIDActivity : AppCompatActivity() {
     lateinit var ANIMAL_CREATE: AnimalEntity
 
     private lateinit var appDb: AppDatabase
-
+    private var animalId: Int = 0
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityReaderRfidBinding.inflate(layoutInflater)
@@ -110,8 +112,18 @@ class ReaderRFIDActivity : AppCompatActivity() {
                 outputStreamWriter.close()
 
                 val responseCode = connection.responseCode
+
+
                 if (responseCode == 201) {
+                    val inputStream = connection.inputStream
+                    val responseString = inputStream.bufferedReader().use { it.readText() }
+
+                    // Parse the response JSON to get the "id"
+                    val responseObject = JSONObject(responseString)
+                    animalId = responseObject.getInt("id")  // Armazena o ID do animal criado
+
                     CREATE_ANIMAL_RESPONSE = "SUCCESS"
+
                 } else {
 
                     CREATE_ANIMAL_RESPONSE = "ERROR"
@@ -130,6 +142,45 @@ class ReaderRFIDActivity : AppCompatActivity() {
 
                 e.printStackTrace()
             }
+            logDate(animalId)
         }
+    }
+    private fun logDate(id: Int){
+        val apiUrl = "https://intelicampo-api-stg.vercel.app/animal-record"
+
+        GlobalScope.launch(Dispatchers.IO) {
+            val url = URL(apiUrl)
+            val connection = url.openConnection() as HttpURLConnection
+            connection.requestMethod = "POST"
+            connection.setRequestProperty("Content-Type", "application/json")
+            connection.doOutput = true
+
+            try {
+                val jsonParam = JSONObject()
+
+                jsonParam.put("status", "Entrada de Animal")
+                jsonParam.put("comment", "Animal Entrou na Fazenda")
+                jsonParam.put("animalId", id)
+                jsonParam.put("date", getCurrentDate())
+
+                val outputStreamWriter = OutputStreamWriter(connection.outputStream)
+                outputStreamWriter.write(jsonParam.toString())
+                outputStreamWriter.flush()
+                outputStreamWriter.close()
+
+
+
+                connection.disconnect()
+            } catch (e: Exception) {
+
+                e.printStackTrace()
+            }
+        }
+    }
+    private fun getCurrentDate(): String {
+        val dateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
+        dateFormat.timeZone = java.util.TimeZone.getTimeZone("UTC")
+        val currentDateTime = Date(System.currentTimeMillis())
+        return dateFormat.format(currentDateTime)
     }
 }

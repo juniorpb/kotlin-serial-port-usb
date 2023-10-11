@@ -2,6 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.INTERNET" />
 
     <application
@@ -14,6 +15,15 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.MyApplication"
         tools:targetApi="31">
+        <activity
+            android:name=".ReaderValidRFIDActivity2"
+            android:exported="false" />
+        <activity
+            android:name=".ValidRfidActivity"
+            android:exported="false" />
+        <activity
+            android:name=".RemoveAnimalActivity"
+            android:exported="false" />
         <activity
             android:name=".FarmsActivity"
             android:exported="false" />

@@ -23,7 +23,8 @@ class EntradaAnimalActivity : AppCompatActivity() {
     private lateinit var selectTypeAnimalSpinner: Spinner
     private lateinit var tattooEditText: EditText
     private lateinit var sendButton: Button
-    private lateinit var rfidEditText: String
+
+
 
     private var selectedRace: String = ""
     private var selectedSex: String = ""
@@ -38,7 +39,7 @@ class EntradaAnimalActivity : AppCompatActivity() {
         selectTypeAnimalSpinner = findViewById(R.id.select_type_animal)
         tattooEditText = findViewById(R.id.textTatuagem)
         sendButton = findViewById(R.id.btnLeituraRFID)
-        rfidEditText = UUID.randomUUID().toString()
+
 
         setupSpinners()
 
