@@ -67,11 +67,6 @@ class MainActivity : AppCompatActivity() {
 
         setContentView(binding.root)
 
-        binding.tela2Btn.setOnClickListener {
-            val intent = Intent(this, Tela2::class.java)
-            startActivity(intent)
-        }
-
         // view elements
         val on = findViewById<Button>(R.id.on)
         val off = findViewById<Button>(R.id.off)
@@ -224,8 +219,6 @@ class MainActivity : AppCompatActivity() {
 
                 if (receivedString.isNotEmpty()){
 
-
-
                     for ((i, value) in data.withIndex()) {
                         println("=== tagBuffer[$i] = ${value}")
 
@@ -241,9 +234,7 @@ class MainActivity : AppCompatActivity() {
 
                             myTextView.text = rfidText
 
-
                         }
-
                     }
                 }
 
@@ -426,7 +417,6 @@ class MainActivity : AppCompatActivity() {
         }
 
     }
-
 
 
 }
