@@ -12,6 +12,15 @@ import android.widget.AdapterView
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Spinner
+import com.example.myapplication.dto.AnimalEntity
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import org.json.JSONObject
+import java.io.OutputStreamWriter
+import java.net.HttpURLConnection
+import java.net.URL
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -30,9 +39,20 @@ class EntradaAnimalActivity : AppCompatActivity() {
     private var selectedSex: String = ""
     private var selectedType: String = ""
 
+
+
+    var CREATE_ANIMAL_RESPONSE = ""
+    lateinit var ANIMAL_CREATE: AnimalEntity
+
+    private lateinit var appDb: AppDatabase
+    private var animalId: Int = 0
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_entrada_animal)
+
+        appDb = AppDatabase.getDatabase(this)
+
 
         selectRaceAnimalSpinner = findViewById(R.id.select_race_animal)
         selectSexAnimalSpinner = findViewById(R.id.select_sex_animal)
@@ -40,6 +60,11 @@ class EntradaAnimalActivity : AppCompatActivity() {
         tattooEditText = findViewById(R.id.textTatuagem)
         sendButton = findViewById(R.id.btnLeituraRFID)
 
+        var rfid = intent.getStringExtra("rfid").toString()
+
+        if (rfid.isEmpty()) {
+            rfid = UUID.randomUUID().toString()
+        }
 
         setupSpinners()
 
@@ -57,7 +82,24 @@ class EntradaAnimalActivity : AppCompatActivity() {
                     Toast.makeText(this@EntradaAnimalActivity, "Erro ao cadastrar o animal", Toast.LENGTH_SHORT).show()
                 }
             }else{
-                goToReanderRfidAndCreateAnimal(sex, race, tattoo, type, currentDateTime)
+                ANIMAL_CREATE = AnimalEntity(
+                    rfid = rfid,
+                    tattoo = tattoo,
+                    race = race,
+                    sex = sex,
+                    type = type,
+                    currentDateTime = currentDateTime
+                )
+
+                sendDataToApi(ANIMAL_CREATE)
+
+                fun navgation() {
+                    val intent = Intent(this, HomeActivity::class.java)
+                    intent.putExtra("CREATE_ANIMAL_RESPONSE", CREATE_ANIMAL_RESPONSE)
+                    startActivity(intent)
+                }
+
+                redirectAsync(::navgation)
             }
         }
     }
@@ -67,7 +109,8 @@ class EntradaAnimalActivity : AppCompatActivity() {
         race: String,
         tattoo: String,
         type: String,
-        currentDateTime: String
+        currentDateTime: String,
+        rfid: String
     ) {
 
         val intent = Intent(this, ReaderRFIDActivity::class.java)
@@ -138,5 +181,112 @@ class EntradaAnimalActivity : AppCompatActivity() {
         val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
         val date = Date()
         return dateFormat.format(date)
+    }
+
+
+    private fun logDate(id: Int){
+        val apiUrl = "https://intelicampo-api-stg.vercel.app/animal-record"
+
+        GlobalScope.launch(Dispatchers.IO) {
+            val url = URL(apiUrl)
+            val connection = url.openConnection() as HttpURLConnection
+            connection.requestMethod = "POST"
+            connection.setRequestProperty("Content-Type", "application/json")
+            connection.doOutput = true
+
+            try {
+                val jsonParam = JSONObject()
+
+                jsonParam.put("status", "Entrada de Animal")
+                jsonParam.put("comment", "Animal Entrou na Fazenda")
+                jsonParam.put("animalId", id)
+                jsonParam.put("date", getCurrentDate())
+
+                val outputStreamWriter = OutputStreamWriter(connection.outputStream)
+                outputStreamWriter.write(jsonParam.toString())
+                outputStreamWriter.flush()
+                outputStreamWriter.close()
+
+
+
+                connection.disconnect()
+            } catch (e: Exception) {
+
+                e.printStackTrace()
+            }
+        }
+    }
+
+
+    private fun sendDataToApi(animalEntity: AnimalEntity) {
+        val apiUrl = "https://intelicampo-api-stg.vercel.app/animal"
+
+        GlobalScope.launch(Dispatchers.IO) {
+            val url = URL(apiUrl)
+            val connection = url.openConnection() as HttpURLConnection
+            connection.requestMethod = "POST"
+            connection.setRequestProperty("Content-Type", "application/json")
+            connection.doOutput = true
+
+            try {
+                val jsonParam = JSONObject()
+                jsonParam.put("animalType", animalEntity.type)
+                jsonParam.put("race", animalEntity.race)
+                jsonParam.put("sex", animalEntity.sex)
+                jsonParam.put("tattoo", animalEntity.tattoo)
+                jsonParam.put("picketId", 30) // TODO: mudar para picket padrao 999
+                jsonParam.put("rfid", animalEntity.rfid)
+                jsonParam.put("birth", animalEntity.currentDateTime)
+
+                val outputStreamWriter = OutputStreamWriter(connection.outputStream)
+                outputStreamWriter.write(jsonParam.toString())
+                outputStreamWriter.flush()
+                outputStreamWriter.close()
+
+                val responseCode = connection.responseCode
+
+
+                if (responseCode == 201) {
+                    val inputStream = connection.inputStream
+                    val responseString = inputStream.bufferedReader().use { it.readText() }
+
+                    // Parse the response JSON to get the "id"
+                    val responseObject = JSONObject(responseString)
+                    animalId = responseObject.getInt("id")  // Armazena o ID do animal criado
+
+                    CREATE_ANIMAL_RESPONSE = "SUCCESS"
+
+                } else {
+
+                    CREATE_ANIMAL_RESPONSE = "ERROR"
+
+                    GlobalScope.launch {
+                        appDb.animalDao().insertAnimal(ANIMAL_CREATE)
+                    }
+
+                }
+                connection.disconnect()
+            } catch (e: Exception) {
+
+                GlobalScope.launch {
+                    appDb.animalDao().insertAnimal(ANIMAL_CREATE)
+                }
+
+                e.printStackTrace()
+            }
+            logDate(animalId)
+        }
+    }
+
+
+    fun redirectAsync(navgation: () -> Unit) {
+        val mainScope = CoroutineScope(Dispatchers.Main)
+        mainScope.launch(Dispatchers.IO) {
+            Thread.sleep(2000)
+
+            launch(Dispatchers.Main) {
+                navgation()
+            }
+        }
     }
 }

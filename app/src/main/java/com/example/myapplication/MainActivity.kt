@@ -27,13 +27,13 @@ import com.felhr.usbserial.UsbSerialInterface.UsbReadCallback
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
-
-    lateinit var usbManager: UsbManager
-    var usbDevice: UsbDevice? = null
-    var usbSerialDevice: UsbSerialDevice? = null
-    var usbDeviceConnection: UsbDeviceConnection? = null
-
-    val ACTION_USB_PERMISSION = "permission"
+//
+//    lateinit var usbManager: UsbManager
+//    var usbDevice: UsbDevice? = null
+//    var usbSerialDevice: UsbSerialDevice? = null
+//    var usbDeviceConnection: UsbDeviceConnection? = null
+//
+//    val ACTION_USB_PERMISSION = "permission"
 
 
     private lateinit var myTextView: TextView
@@ -57,15 +57,18 @@ class MainActivity : AppCompatActivity() {
 
             //antennaConfiguration(1)
 
-
-            for (i in 1..5) {
-                antennaConfiguration(i)
-                Thread.sleep(5) // Atraso de 1 segundo
-            }
+//
+//            for (i in 1..5) {
+//                antennaConfiguration(i)
+//                Thread.sleep(5) // Atraso de 1 segundo
+//            }
 
         }
 
         setContentView(binding.root)
+
+        val intent = Intent(this, HomeActivity::class.java)
+        startActivity(intent)
 
         // view elements
         val on = findViewById<Button>(R.id.on)
@@ -77,14 +80,15 @@ class MainActivity : AppCompatActivity() {
 
         statusConnectionTextView = findViewById(R.id.statusConnectedTextViewId)
 
-        startUsbService()
-
-        on.setOnClickListener { sendData("a") } //97
-        off.setOnClickListener { sendData("b") }
-        disconnect.setOnClickListener { disconnect() }
-        connect.setOnClickListener { startUsbConnecting() }
+//        startUsbService()
+//
+//        on.setOnClickListener { sendData("a") } //97
+//        off.setOnClickListener { sendData("b") }
+//        disconnect.setOnClickListener { disconnect() }
+//        connect.setOnClickListener { startUsbConnecting() }
     }
 
+    /*
     private fun startUsbService() {
         usbManager = getSystemService(Context.USB_SERVICE) as UsbManager
 
@@ -174,7 +178,8 @@ class MainActivity : AppCompatActivity() {
                     usbSerialDevice = UsbSerialDevice.createUsbSerialDevice(usbDevice, usbDeviceConnection)
                     if (usbSerialDevice != null) {
                         if (usbSerialDevice!!.open()) {
-                            usbSerialDevice!!.setBaudRate(57600)
+                            //usbSerialDevice!!.setBaudRate(57600)
+                            usbSerialDevice!!.setBaudRate(9600)
                             usbSerialDevice!!.setDataBits(UsbSerialInterface.DATA_BITS_8)
                             usbSerialDevice!!.setStopBits(UsbSerialInterface.STOP_BITS_1)
                             usbSerialDevice!!.setParity(UsbSerialInterface.PARITY_NONE)
@@ -209,6 +214,7 @@ class MainActivity : AppCompatActivity() {
 
         override fun onReceivedData(data: ByteArray) {
             try {
+                Log.i("======RECEIVE", data.toString())
 
                 val receivedString = data.toHexString()
 
@@ -419,4 +425,5 @@ class MainActivity : AppCompatActivity() {
     }
 
 
+*/
 }
