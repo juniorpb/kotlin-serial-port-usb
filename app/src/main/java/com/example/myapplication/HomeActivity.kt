@@ -82,15 +82,15 @@ class HomeActivity : AppCompatActivity() {
             }
 
             val readRfidDialog =
-                CustomBottomSheetDialogFragment(R.layout.ler_rfid_layout, dialogFragmentFields)
+                CustomBottomSheetDialogFragment(R.layout.ler_rfid_layout, dialogFragmentFields, "")
             readRfidDialog.show(supportFragmentManager, readRfidDialog.tag)
 
             handler.postDelayed({
-                readRfidDialog.dismiss()
-                val intent = Intent(this, EntradaAnimalActivity::class.java)
-                intent.putExtra("rfid", dialogFragmentFields.rfid)
-
-                startActivity(intent)
+//                readRfidDialog.dismiss()
+//                val intent = Intent(this, EntradaAnimalActivity::class.java)
+//                intent.putExtra("rfid", dialogFragmentFields.rfid)
+//
+//                startActivity(intent)
             }, 3000)
 
 
@@ -112,25 +112,25 @@ class HomeActivity : AppCompatActivity() {
             }
 
             val readRfidDialog =
-                CustomBottomSheetDialogFragment(R.layout.ler_rfid_layout, dialogFragmentFields)
+                CustomBottomSheetDialogFragment(R.layout.ler_rfid_layout, dialogFragmentFields, "")
             readRfidDialog.show(supportFragmentManager, readRfidDialog.tag)
 
             val handler = Handler(Looper.getMainLooper())
 
             //dialogFragmentFields.rfid = "RFID: ${UUID.randomUUID()}"
 
-            val validRfidDialog =
-                CustomBottomSheetDialogFragment(R.layout.activity_valid_rfid, dialogFragmentFields)
+//            val validRfidDialog =
+//                CustomBottomSheetDialogFragment(R.layout.activity_valid_rfid, dialogFragmentFields)
 
 
             handler.postDelayed({
                 readRfidDialog.dismiss()
 
-                validRfidDialog.show(supportFragmentManager, validRfidDialog.tag)
-
-                handler.postDelayed({
-                    validRfidDialog.dismiss()
-                }, 2000)
+//                validRfidDialog.show(supportFragmentManager, validRfidDialog.tag)
+//
+//                handler.postDelayed({
+//                    validRfidDialog.dismiss()
+//                }, 2000)
 
 
             }, 3000)
@@ -338,13 +338,10 @@ class HomeActivity : AppCompatActivity() {
                 if (receivedString.isNotEmpty()) {
 
                     var rfidText = ""
-
                     for ((i, value) in data.withIndex()) {
                         println("=== tagBuffer[$i] = ${value}")
 
-
                         if (value.toInt() == 21) {
-
                             println("=== RFID =================")
 
                             for (i in 7..18) {
@@ -352,6 +349,24 @@ class HomeActivity : AppCompatActivity() {
                                 rfidText += RFIDArray[i]
                             }
                             dialogFragmentFields.rfid = rfidText
+
+
+                            println(dialogFragmentFields)
+                            val validRfidDialog =
+                                CustomBottomSheetDialogFragment(R.layout.activity_valid_rfid, dialogFragmentFields, rfidText)
+
+                            validRfidDialog.show(supportFragmentManager, validRfidDialog.tag)
+
+                            handler.postDelayed({
+                                validRfidDialog.dismiss()
+                            }, 5000)
+
+//
+//                            val intent = Intent(this@HomeActivity, EntradaAnimalActivity::class.java)
+//                            intent.putExtra("rfid", rfidText)
+//
+//                            startActivity(intent)
+
                         } else {
                             dialogFragmentFields.rfid = RFIDArray.toString()
                         }

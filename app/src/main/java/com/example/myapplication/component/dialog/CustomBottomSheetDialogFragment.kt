@@ -10,10 +10,11 @@ import com.example.myapplication.R
 import com.example.myapplication.dto.DialogFragmentFields
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 
-class CustomBottomSheetDialogFragment(resource: Int, dialogFragmentFields: DialogFragmentFields) : BottomSheetDialogFragment() {
+class CustomBottomSheetDialogFragment(resource: Int, dialogFragmentFields: DialogFragmentFields, rfidText: String) : BottomSheetDialogFragment() {
 
     private val resourceLayout = resource
     private val dialogFragment = dialogFragmentFields
+    private val rfidTextValue = rfidText
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -25,7 +26,7 @@ class CustomBottomSheetDialogFragment(resource: Int, dialogFragmentFields: Dialo
 
         if (resourceLayout == R.layout.activity_valid_rfid) {
             val textView = view.findViewById<TextView>(R.id.textRfid)
-            textView.text = dialogFragment.rfid
+            textView.text = rfidTextValue
         }
 
 
