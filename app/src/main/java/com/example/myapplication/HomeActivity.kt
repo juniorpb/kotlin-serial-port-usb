@@ -10,36 +10,27 @@ import android.content.SharedPreferences
 import android.hardware.usb.UsbDevice
 import android.hardware.usb.UsbDeviceConnection
 import android.hardware.usb.UsbManager
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
-import android.view.Gravity
-import android.view.View
-import android.view.ViewGroup
 import android.widget.TextView
-import android.widget.Toast
-import androidx.fragment.app.DialogFragment
+import androidx.appcompat.app.AppCompatActivity
 import com.example.myapplication.component.dialog.CustomBottomSheetDialogFragment
 import com.example.myapplication.databinding.ActivityHomeBinding
-import com.example.myapplication.databinding.ActivityReaderValidRfidactivity2Binding
-import com.example.myapplication.databinding.ActivityValidRfidBinding
-import com.example.myapplication.databinding.LerRfidLayoutBinding
-import com.example.myapplication.dto.DialogFragmentFields
 import com.felhr.usbserial.UsbSerialDevice
 import com.felhr.usbserial.UsbSerialInterface
-import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.snackbar.Snackbar
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
-import java.util.UUID
+import kotlinx.coroutines.withContext
 
 class HomeActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityHomeBinding
     private lateinit var appDb: AppDatabase
-    private lateinit var dialogFragmentFields: DialogFragmentFields
 
     private val handler = Handler(Looper.getMainLooper())
 
@@ -52,20 +43,19 @@ class HomeActivity : AppCompatActivity() {
     private lateinit var statusConnectionTextView: TextView
     private var usbDevices: HashMap<String, UsbDevice>? = null
 
+    object GlobalVariables {
+        var RFID: String = ""
+    }
 
+
+
+    @OptIn(DelicateCoroutinesApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
-
         super.onCreate(savedInstanceState)
-
         binding = ActivityHomeBinding.inflate(layoutInflater)
-
         setContentView(binding.root)
 
         appDb = AppDatabase.getDatabase(this)
-
-
-
-        dialogFragmentFields = DialogFragmentFields(rfid = "")
 
         binding.btnLogout.setOnClickListener {
             val intent = Intent(this, LoginActivity::class.java)
@@ -75,24 +65,7 @@ class HomeActivity : AppCompatActivity() {
 
         binding.btnEntradaAnimal.setOnClickListener {
 
-            for (i in 1..5) {
-                antennaConfiguration(i)
-                //sendData("a")
-                Thread.sleep(5) // Atraso de 1 segundo
-            }
-
-            val readRfidDialog =
-                CustomBottomSheetDialogFragment(R.layout.ler_rfid_layout, dialogFragmentFields, "")
-            readRfidDialog.show(supportFragmentManager, readRfidDialog.tag)
-
-            handler.postDelayed({
-//                readRfidDialog.dismiss()
-//                val intent = Intent(this, EntradaAnimalActivity::class.java)
-//                intent.putExtra("rfid", dialogFragmentFields.rfid)
-//
-//                startActivity(intent)
-            }, 3000)
-
+            readRFID("OPEN_CREATE_ANIMAL")
 
         }
 
@@ -105,37 +78,7 @@ class HomeActivity : AppCompatActivity() {
         statusConnectionTextView = binding.textUsbStatus
 
         binding.btnValidRFID.setOnClickListener {
-            for (i in 1..5) {
-                antennaConfiguration(i)
-                //sendData("a")
-                Thread.sleep(5) // Atraso de 1 segundo
-            }
-
-            val readRfidDialog =
-                CustomBottomSheetDialogFragment(R.layout.ler_rfid_layout, dialogFragmentFields, "")
-            readRfidDialog.show(supportFragmentManager, readRfidDialog.tag)
-
-            val handler = Handler(Looper.getMainLooper())
-
-            //dialogFragmentFields.rfid = "RFID: ${UUID.randomUUID()}"
-
-//            val validRfidDialog =
-//                CustomBottomSheetDialogFragment(R.layout.activity_valid_rfid, dialogFragmentFields)
-
-
-            handler.postDelayed({
-                readRfidDialog.dismiss()
-
-//                validRfidDialog.show(supportFragmentManager, validRfidDialog.tag)
-//
-//                handler.postDelayed({
-//                    validRfidDialog.dismiss()
-//                }, 2000)
-
-
-            }, 3000)
-
-
+            readRFID("OPEN_VALID_DIALOG")
         }
 
 
@@ -144,10 +87,7 @@ class HomeActivity : AppCompatActivity() {
         startJob()
 
 
-
-
         val sharedPreferences = getSharedPreferences("UserData", Context.MODE_PRIVATE)
-
         val username = sharedPreferences.getString("username", "")
         val selectedFarmName = sharedPreferences.getString("selectedFarmName", "")
 
@@ -175,6 +115,85 @@ class HomeActivity : AppCompatActivity() {
         } else if (CREATE_ANIMAL_RESPONSE == "ERROR") {
             showToastError()
         }
+    }
+
+    @OptIn(DelicateCoroutinesApi::class)
+    private fun readRFID(functionName: String) {
+        val handler = Handler(Looper.getMainLooper())
+
+
+
+        fun startReadRfid() {
+            for (i in 1..5) {
+                antennaConfiguration(i)
+                Thread.sleep(5) // delay de 1 segundo
+            }
+        }
+
+        val readRfidDialog =
+            CustomBottomSheetDialogFragment(
+                R.layout.ler_rfid_layout,
+                GlobalVariables.RFID
+            )
+
+        readRfidDialog.show(supportFragmentManager, readRfidDialog.tag)
+
+        GlobalScope.launch {
+
+            for (i in 1..5) {
+                startReadRfid()
+                withContext(Dispatchers.IO) {
+                    Thread.sleep(1000) // delay de 1 segundo
+                }
+
+                if (GlobalVariables.RFID.isNotEmpty()) {
+                    readRfidDialog.dismiss()
+
+                    val validRfidDialog = CustomBottomSheetDialogFragment(
+                        R.layout.activity_valid_rfid,
+                        GlobalVariables.RFID
+                    )
+
+                    if (functionName == "OPEN_VALID_DIALOG") {
+                        validRfidDialog.show(supportFragmentManager, validRfidDialog.tag)
+                        handler.postDelayed({
+                            validRfidDialog.dismiss()
+                        }, 5000)
+                    }
+
+                    if (functionName == "OPEN_CREATE_ANIMAL") {
+                            val intent = Intent(this@HomeActivity, EntradaAnimalActivity::class.java)
+                            intent.putExtra("rfid", GlobalVariables.RFID)
+
+                            startActivity(intent)
+                    }
+
+
+
+                    return@launch
+                }
+            }
+        }
+
+        handler.postDelayed({
+            readRfidDialog.dismiss()
+
+            if (GlobalVariables.RFID.isEmpty()) {
+                val errorRfidDialog = CustomBottomSheetDialogFragment(
+                    R.layout.error_read_rfid_layout,
+                    GlobalVariables.RFID
+                )
+
+                errorRfidDialog.show(supportFragmentManager, errorRfidDialog.tag)
+
+                handler.postDelayed({
+                    errorRfidDialog.dismiss()
+                }, 5000)
+            }
+
+            GlobalVariables.RFID = ""
+        }, 6000)
+
     }
 
     private fun showToastSuccess() {
@@ -232,12 +251,6 @@ class HomeActivity : AppCompatActivity() {
                     )
 
                     usbManager.requestPermission(usbDevice, intent)
-
-                    val al2 = AlertDialog.Builder(this)
-                    al2.setTitle("id")
-                    al2.setMessage("usbDevice ${usbDevice.toString()}")
-                    al2.show()
-
 
                 } catch (e: Exception) {
                     val alertError = AlertDialog.Builder(this)
@@ -348,18 +361,18 @@ class HomeActivity : AppCompatActivity() {
                                 print(RFIDArray[i])
                                 rfidText += RFIDArray[i]
                             }
-                            dialogFragmentFields.rfid = rfidText
 
+                            GlobalVariables.RFID = rfidText
 
-                            println(dialogFragmentFields)
-                            val validRfidDialog =
-                                CustomBottomSheetDialogFragment(R.layout.activity_valid_rfid, dialogFragmentFields, rfidText)
-
-                            validRfidDialog.show(supportFragmentManager, validRfidDialog.tag)
-
-                            handler.postDelayed({
-                                validRfidDialog.dismiss()
-                            }, 5000)
+                            println(GlobalVariables.RFID)
+//                            val validRfidDialog =
+//                                CustomBottomSheetDialogFragment(R.layout.activity_valid_rfid, dialogFragmentFields, rfidText)
+//
+//                            validRfidDialog.show(supportFragmentManager, validRfidDialog.tag)
+//
+//                            handler.postDelayed({
+//                                validRfidDialog.dismiss()
+//                            }, 5000)
 
 //
 //                            val intent = Intent(this@HomeActivity, EntradaAnimalActivity::class.java)
@@ -367,14 +380,12 @@ class HomeActivity : AppCompatActivity() {
 //
 //                            startActivity(intent)
 
-                        } else {
-                            dialogFragmentFields.rfid = RFIDArray.toString()
                         }
                     }
                 }
 
             } catch (e: Exception) {
-                dialogFragmentFields.rfid = e.message
+                GlobalVariables.RFID = e.message.toString()
             }
         }
     }

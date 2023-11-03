@@ -1,21 +1,25 @@
 package com.example.myapplication.component.dialog
 import android.os.Bundle
 import android.view.KeyEvent
-import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import com.example.myapplication.R
-import com.example.myapplication.dto.DialogFragmentFields
 import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.google.android.material.bottomsheet.BottomSheetDialogFragment
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
-class CustomBottomSheetDialogFragment(resource: Int, dialogFragmentFields: DialogFragmentFields, rfidText: String) : BottomSheetDialogFragment() {
+class CustomBottomSheetDialogFragment(resource: Int, rfidText: String) : BottomSheetDialogFragment() {
 
     private val resourceLayout = resource
-    private val dialogFragment = dialogFragmentFields
     private val rfidTextValue = rfidText
 
+    @OptIn(DelicateCoroutinesApi::class)
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -27,6 +31,20 @@ class CustomBottomSheetDialogFragment(resource: Int, dialogFragmentFields: Dialo
         if (resourceLayout == R.layout.activity_valid_rfid) {
             val textView = view.findViewById<TextView>(R.id.textRfid)
             textView.text = rfidTextValue
+        }
+
+        if (resourceLayout == R.layout.ler_rfid_layout) {
+            val textView = view.findViewById<TextView>(R.id.textViewCount)
+
+            GlobalScope.launch {
+                for (i in 5 downTo 1) {
+                    textView.text = i.toString()
+                    withContext(Dispatchers.IO) {
+                        Thread.sleep(1000) // delay de 1 segundo
+                    }
+                }
+
+            }
         }
 
 

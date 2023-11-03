@@ -14,6 +14,7 @@ import android.widget.EditText
 import android.widget.Spinner
 import com.example.myapplication.dto.AnimalEntity
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -33,15 +34,11 @@ class EntradaAnimalActivity : AppCompatActivity() {
     private lateinit var tattooEditText: EditText
     private lateinit var sendButton: Button
 
-
-
     private var selectedRace: String = ""
     private var selectedSex: String = ""
     private var selectedType: String = ""
 
-
-
-    var CREATE_ANIMAL_RESPONSE = ""
+    var CREATE_ANIMAL_RESPONSE = "ERROR"
     lateinit var ANIMAL_CREATE: AnimalEntity
 
     private lateinit var appDb: AppDatabase
@@ -218,6 +215,7 @@ class EntradaAnimalActivity : AppCompatActivity() {
     }
 
 
+    @OptIn(DelicateCoroutinesApi::class)
     private fun sendDataToApi(animalEntity: AnimalEntity) {
         val apiUrl = "https://intelicampo-api-stg.vercel.app/animal"
 
