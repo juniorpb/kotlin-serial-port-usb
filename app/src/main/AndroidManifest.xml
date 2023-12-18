@@ -40,9 +40,6 @@
             android:name=".LoginActivity"
             android:exported="false" />
         <activity
-            android:name=".Tela2"
-            android:exported="false" />
-        <activity
             android:name=".MainActivity"
             android:exported="true">
             <intent-filter>

@@ -1,11 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="#f3f3f3"
-    tools:context=".ValidRfidActivity">
+    android:layout_height="match_parent">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -32,29 +29,30 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="10dp"
-            app:srcCompat="@drawable/check_circle" />
+            app:srcCompat="@drawable/check_error" />
+
+
+        <TextView
+            android:id="@+id/textView6"
+            android:layout_width="match_parent"
+            android:layout_height="43dp"
+            android:fontFamily="sans-serif-medium"
+            android:text=""
+            android:textAlignment="center"
+            android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+            android:textSize="24sp" />
 
         <TextView
             android:id="@+id/textView3"
             android:layout_width="match_parent"
             android:layout_height="44dp"
             android:fontFamily="sans-serif-medium"
-            android:text="RFID Valido"
+            android:text="Erro ao ler a TAG, tente novamente"
             android:textAlignment="center"
             android:textAppearance="@style/TextAppearance.AppCompat.Body1"
             android:textColor="#5A5A5A"
             android:textSize="24sp" />
 
-        <TextView
-            android:id="@+id/textRfid"
-            android:layout_width="match_parent"
-            android:layout_height="79dp"
-            android:fontFamily="sans-serif"
-            android:text="RIFD"
-            android:textAlignment="center"
-            android:textAppearance="@style/TextAppearance.AppCompat.Large"
-            android:textColor="#757575"
-            android:textSize="20sp" />
 
         <TextView
             android:id="@+id/textView5"
@@ -68,4 +66,5 @@
 
 
     </LinearLayout>
+
 </androidx.constraintlayout.widget.ConstraintLayout>

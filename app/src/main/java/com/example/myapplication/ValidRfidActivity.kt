@@ -14,7 +14,7 @@ class ValidRfidActivity : AppCompatActivity() {
 
         val rfid = intent.getStringExtra("RFID").toString()
         val handler = Handler(Looper.getMainLooper())
-        val textView = findViewById<TextView>(R.id.textView4)
+        val textView = findViewById<TextView>(R.id.textRfid)
         textView.text = "RFID: ${rfid}"
 
         handler.postDelayed({
